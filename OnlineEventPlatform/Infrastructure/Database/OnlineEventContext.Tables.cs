@@ -1,4 +1,5 @@
 ﻿using Domain.Catalog.Entities;
+using Domain.Identity.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Database;
@@ -9,4 +10,6 @@ public partial class OnlineEventContext
     public DbSet<Position> Positions { get; set; } = null!;
     public DbSet<Speaker> Speakers { get; set; } = null!;
     public DbSet<OnlineEvent> OnlineEvents { get; set; } = null!;
+    public DbSet<User> Users { get; set; } = null!;
+    public DbSet<UserProfile> UserProfiles { get; set; } = null!;
 }
