@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers.Catalog;
 
+[Route("departments")]
 public class DepartmentController : Controller
 {
     private readonly IDepartmentService _departmentService;

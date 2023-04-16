@@ -1,6 +1,6 @@
 ﻿using Application.Catalog.Services.Interfaces;
 using AutoMapper;
-using Domain.Catalog.Repositories.Interfaces;
+using Application.Catalog.Repositories.Interfaces;
 using Infrastructure.Database;
 using Infrastructure.Services;
 using Infrastructure.Services.Interfaces;
@@ -29,7 +29,14 @@ public class PositionService : BaseDataService<OnlineEventContext>, IPositionSer
         return await ExecuteSafeAsync(async () =>
         {
             var positions = await _positionRepository.GetPositionsAsync();
-            return positions.Select(p => _mapper.Map<PositionDto>(p));
+
+            var positionsDto = positions.Select(p => new PositionDto()
+            {
+                Id = p.Id,
+                Name = p.Name
+            });
+
+            return positionsDto;
         });
     }
 
@@ -38,7 +45,19 @@ public class PositionService : BaseDataService<OnlineEventContext>, IPositionSer
         return await ExecuteSafeAsync(async () =>
         {
             var position = await _positionRepository.GetPositionAsync(id);
-            return _mapper.Map<PositionDto?>(position);
+
+            if (position == null)
+            {
+                return null;
+            }
+
+            var positionDto = new PositionDto()
+            {
+                Id = position.Id,
+                Name = position.Name
+            };
+
+            return positionDto;
         });
     }
 

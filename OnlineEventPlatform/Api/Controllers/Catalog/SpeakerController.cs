@@ -17,7 +17,7 @@ public class SpeakerController : Controller
         _speakerService = speakerService;
     }
 
-    [HttpGet("getSpeakers")]
+    [HttpGet]
     [ProducesResponseType(typeof(ListItemsResponse<SpeakerDto>), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetSpeakers()
     {

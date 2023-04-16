@@ -1,6 +1,6 @@
 ﻿using Domain.Catalog.Entities;
 
-namespace Domain.Catalog.Repositories.Interfaces;
+namespace Application.Catalog.Repositories.Interfaces;
 
 public interface IPositionRepository
 {

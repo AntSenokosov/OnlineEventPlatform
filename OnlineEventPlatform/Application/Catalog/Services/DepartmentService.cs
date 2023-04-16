@@ -1,6 +1,6 @@
 ﻿using Application.Catalog.Services.Interfaces;
 using AutoMapper;
-using Domain.Catalog.Repositories.Interfaces;
+using Application.Catalog.Repositories.Interfaces;
 using Infrastructure.Database;
 using Infrastructure.Services;
 using Infrastructure.Services.Interfaces;
@@ -29,7 +29,14 @@ public class DepartmentService : BaseDataService<OnlineEventContext>, IDepartmen
         return await ExecuteSafeAsync(async () =>
         {
             var departments = await _departmentRepository.GetDepartmentsAsync();
-            return departments.Select(d => _mapper.Map<DepartmentDto>(d));
+
+            var departmentsDto = departments.Select(d => new DepartmentDto()
+            {
+                Id = d.Id,
+                Name = d.Name,
+                Number = d.Number
+            });
+            return departmentsDto;
         });
     }
 
@@ -38,7 +45,20 @@ public class DepartmentService : BaseDataService<OnlineEventContext>, IDepartmen
         return await ExecuteSafeAsync(async () =>
         {
             var department = await _departmentRepository.GetDepartmentAsync(id);
-            return _mapper.Map<DepartmentDto?>(department);
+
+            if (department == null)
+            {
+                return null;
+            }
+
+            var departmentDto = new DepartmentDto()
+            {
+                Id = department.Id,
+                Name = department.Name,
+                Number = department.Number
+            };
+
+            return departmentDto;
         });
     }
 

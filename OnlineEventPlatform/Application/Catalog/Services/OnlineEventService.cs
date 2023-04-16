@@ -1,6 +1,6 @@
 ﻿using Application.Catalog.Services.Interfaces;
 using AutoMapper;
-using Domain.Catalog.Repositories.Interfaces;
+using Application.Catalog.Repositories.Interfaces;
 using Infrastructure.Database;
 using Infrastructure.Services;
 using Infrastructure.Services.Interfaces;
@@ -29,7 +29,17 @@ public class OnlineEventService : BaseDataService<OnlineEventContext>, IOnlineEv
         return await ExecuteSafeAsync(async () =>
         {
             var events = await _eventRepository.GetOnlineEventsAsync();
-            return events.Select(e => _mapper.Map<OnlineEventDto>(e));
+
+            var eventsDto = events.Select(e => new OnlineEventDto()
+            {
+                Id = e.Id,
+                Name = e.Name,
+                Description = e.Description,
+                DateAndTime = e.DateAndTime,
+                AboutEvent = e.AboutEvent
+            });
+
+            return eventsDto;
         });
     }
 
@@ -38,7 +48,22 @@ public class OnlineEventService : BaseDataService<OnlineEventContext>, IOnlineEv
         return await ExecuteSafeAsync(async () =>
         {
             var onlineEvent = await _eventRepository.GetOnlineEventAsync(id);
-            return _mapper.Map<OnlineEventDto?>(onlineEvent);
+
+            if (onlineEvent == null)
+            {
+                return null;
+            }
+
+            var eventDto = new OnlineEventDto()
+            {
+                Id = onlineEvent.Id,
+                Name = onlineEvent.Name,
+                Description = onlineEvent.Description,
+                DateAndTime = onlineEvent.DateAndTime,
+                AboutEvent = onlineEvent.AboutEvent
+            };
+
+            return eventDto;
         });
     }
 

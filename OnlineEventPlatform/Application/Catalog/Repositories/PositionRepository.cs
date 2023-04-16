@@ -1,10 +1,10 @@
 ﻿using Domain.Catalog.Entities;
-using Domain.Catalog.Repositories.Interfaces;
+using Application.Catalog.Repositories.Interfaces;
 using Infrastructure.Database;
 using Infrastructure.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace Domain.Catalog.Repositories;
+namespace Application.Catalog.Repositories;
 
 public class PositionRepository : IPositionRepository
 {

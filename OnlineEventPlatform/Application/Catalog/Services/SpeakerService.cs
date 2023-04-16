@@ -1,6 +1,6 @@
 ﻿using Application.Catalog.Services.Interfaces;
 using AutoMapper;
-using Domain.Catalog.Repositories.Interfaces;
+using Application.Catalog.Repositories.Interfaces;
 using Infrastructure.Database;
 using Infrastructure.Services;
 using Infrastructure.Services.Interfaces;
@@ -29,7 +29,18 @@ public class SpeakerService : BaseDataService<OnlineEventContext>, ISpeakerServi
         return await ExecuteSafeAsync(async () =>
         {
             var speakers = await _speakerRepository.GetSpeakersAsync();
-            return speakers.Select(s => _mapper.Map<SpeakerDto>(s));
+
+            var speakersDto = speakers.Select(s => new SpeakerDto()
+            {
+                Id = s.Id,
+                FirstName = s.FirstName,
+                LastName = s.LastName,
+                Description = s.Description,
+                DepartmentId = s.DepartmentId,
+                PositionId = s.PositionId
+            });
+
+            return speakersDto;
         });
     }
 
@@ -38,7 +49,23 @@ public class SpeakerService : BaseDataService<OnlineEventContext>, ISpeakerServi
         return await ExecuteSafeAsync(async () =>
         {
             var speaker = await _speakerRepository.GetSpeakerAsync(id);
-            return _mapper.Map<SpeakerDto?>(speaker);
+
+            if (speaker == null)
+            {
+                return null;
+            }
+
+            var speakerDto = new SpeakerDto()
+            {
+                Id = speaker.Id,
+                FirstName = speaker.FirstName,
+                LastName = speaker.LastName,
+                PositionId = speaker.PositionId,
+                DepartmentId = speaker.DepartmentId,
+                Description = speaker.Description
+            };
+
+            return speakerDto;
         });
     }
 
