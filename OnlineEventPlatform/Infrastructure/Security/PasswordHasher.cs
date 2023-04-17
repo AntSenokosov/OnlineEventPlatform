@@ -3,7 +3,7 @@ using System.Text;
 
 namespace Infrastructure.Security;
 
-public class PasswordHasher
+public class PasswordHasher : IPasswordHasher
 {
     private readonly HMACSHA512 _key = new HMACSHA512("wdqfrw3r3qfdqwewe4gw4vw4g3qwrdq3wfvgerghw4rq3werv4h45trf3cqq3rd2dsqfw34g"u8.ToArray());
 

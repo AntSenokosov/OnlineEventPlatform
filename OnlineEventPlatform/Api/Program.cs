@@ -1,21 +1,42 @@
 using Api;
+using Domain.Identity.Entities;
 using Infrastructure.Database;
+using Infrastructure.Security;
 using Infrastructure.Services;
 using Infrastructure.Services.Interfaces;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using NSwag;
+using NSwag.Generation.Processors.Security;
 
 var config = GetConfiguration();
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-
 // Add services to the container.
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+builder.Services.AddJwt();
+
 builder.Services.AddControllers();
 
 builder.Services.AddOpenApiDocument(document =>
 {
     document.Title = "Online event platform backend documentation";
+    document.AddSecurity("Bearer", Enumerable.Empty<string>(), new OpenApiSecurityScheme
+    {
+        Type = OpenApiSecuritySchemeType.Http,
+        Scheme = JwtBearerDefaults.AuthenticationScheme,
+        BearerFormat = "JWT",
+        Description = "Paste your JWT token into the input field.",
+        Name = "Authorization",
+        In = OpenApiSecurityApiKeyLocation.Header
+    });
+
+    document.OperationProcessors.Add(
+        new AspNetCoreOperationSecurityScopeProcessor("Bearer"));
 });
+
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddServices();
 
@@ -89,10 +110,34 @@ void MigrateDatabase(IHost host)
         try
         {
             var context = services.GetService<OnlineEventContext>();
+            var passwordHasher = services.GetService<IPasswordHasher>();
 
             if (context != null)
             {
                 context.Database.Migrate();
+
+                var email = "a.y.senokosov@student.khai.edu";
+
+                var password = config.GetValue<string>("Password");
+
+                var user = context.Users
+                    .SingleOrDefault(u => u.Email == email && !u.IsDeleted);
+
+                if (user == null && passwordHasher != null && password != null)
+                {
+                    var salt = Guid.NewGuid().ToByteArray();
+                    {
+                        var person = new User()
+                        {
+                            Email = email,
+                            Hash = passwordHasher.Hash(password, salt),
+                            Salt = salt
+                        };
+
+                        context.Users.Add(person);
+                        context.SaveChanges();
+                    }
+                }
             }
         }
         catch (Exception ex)
