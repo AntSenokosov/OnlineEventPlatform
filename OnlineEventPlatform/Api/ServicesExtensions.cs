@@ -6,6 +6,10 @@ using Application.Identity.Repositories;
 using Application.Identity.Repositories.Interfaces;
 using Application.Identity.Services;
 using Application.Identity.Services.Interfaces;
+using Application.UserEvents.Repositories;
+using Application.UserEvents.Repositories.Interfaces;
+using Application.UserEvents.Services;
+using Application.UserEvents.Services.Interfaces;
 using Infrastructure.Security;
 using Infrastructure.Services;
 using Infrastructure.Services.Interfaces;
@@ -85,5 +89,8 @@ public static class ServicesExtensions
         services.AddTransient<IUserProfileRepository, UserProfileRepository>();
         services.AddTransient<IUserService, UserService>();
         services.AddTransient<IUserProfileService, UserProfileService>();
+
+        services.AddTransient<IUserEventRepository, UserEventRepository>();
+        services.AddTransient<IUserEventService, UserEventService>();
     }
 }
