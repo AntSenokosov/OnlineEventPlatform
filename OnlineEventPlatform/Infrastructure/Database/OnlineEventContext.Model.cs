@@ -14,5 +14,6 @@ public partial class OnlineEventContext
         builder.ApplyConfiguration(new OnlineEventEntityConfiguration());
         builder.ApplyConfiguration(new UserEntityConfiguration());
         builder.ApplyConfiguration(new UserProfileEntityConfiguration());
+        builder.ApplyConfiguration(new SpeakerEventEntityConfiguration());
     }
 }

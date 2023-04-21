@@ -23,18 +23,5 @@ public class OnlineEventEntityConfiguration : IEntityTypeConfiguration<OnlineEve
 
         builder.Property(e => e.AboutEvent)
             .IsRequired();
-
-        builder.HasMany(e => e.Speakers)
-            .WithMany(s => s.OnlineEvents)
-            .UsingEntity<Dictionary<string, object>>(
-                "SpeakerEvent",
-                j =>
-                    j.HasOne<Speaker>()
-                        .WithMany()
-                        .HasForeignKey("SpeakerId"),
-                j =>
-                    j.HasOne<OnlineEvent>()
-                        .WithMany()
-                        .HasForeignKey("EventId"));
     }
 }

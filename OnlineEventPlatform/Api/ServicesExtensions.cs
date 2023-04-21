@@ -6,6 +6,8 @@ using Application.Identity.Repositories;
 using Application.Identity.Repositories.Interfaces;
 using Application.Identity.Services;
 using Application.Identity.Services.Interfaces;
+using Application.SendMail.Services;
+using Application.SendMail.Services.Interfaces;
 using Application.UserEvents.Repositories;
 using Application.UserEvents.Repositories.Interfaces;
 using Application.UserEvents.Services;
@@ -92,5 +94,7 @@ public static class ServicesExtensions
 
         services.AddTransient<IUserEventRepository, UserEventRepository>();
         services.AddTransient<IUserEventService, UserEventService>();
+
+        services.AddTransient<ISendMailService, SendMailService>();
     }
 }

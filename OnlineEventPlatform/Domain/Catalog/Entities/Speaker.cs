@@ -10,5 +10,4 @@ public class Speaker
     public Position Position { get; set; } = null!;
     public int PositionId { get; set; }
     public string Description { get; set; } = null!;
-    public List<OnlineEvent> OnlineEvents { get; set; } = new List<OnlineEvent>();
 }
