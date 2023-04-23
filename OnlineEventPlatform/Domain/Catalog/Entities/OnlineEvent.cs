@@ -7,5 +7,4 @@ public class OnlineEvent
     public string Description { get; set; } = null!;
     public DateTime DateAndTime { get; set; }
     public string AboutEvent { get; set; } = null!;
-    public List<Speaker> Speakers { get; set; } = new List<Speaker>();
 }

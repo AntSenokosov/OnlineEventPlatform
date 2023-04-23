@@ -11,6 +11,7 @@ public partial class OnlineEventContext
     public DbSet<Position> Positions { get; set; } = null!;
     public DbSet<Speaker> Speakers { get; set; } = null!;
     public DbSet<OnlineEvent> OnlineEvents { get; set; } = null!;
+    public DbSet<SpeakerEvent> SpeakerEvents { get; set; } = null!;
     public DbSet<User> Users { get; set; } = null!;
     public DbSet<UserProfile> UserProfiles { get; set; } = null!;
     public DbSet<UserEvent> UserEvents { get; set; } = null!;
