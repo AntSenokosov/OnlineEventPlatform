@@ -22,8 +22,13 @@ public class MailSendController : Controller
     [ProducesResponseType((int)HttpStatusCode.OK)]
     public async Task<IActionResult> SendMail([FromBody] MailRequest request)
     {
-        await _sendMail.SendMail(request.EventId, request.Subject, request.Message);
+        var statusEmail = await _sendMail.SendMail(request.EventId, request.Subject, request.Message);
 
-        return Ok();
+        if (statusEmail)
+        {
+            return Ok(statusEmail);
+        }
+
+        return BadRequest(statusEmail);
     }
 }

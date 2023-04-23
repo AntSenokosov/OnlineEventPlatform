@@ -2,5 +2,5 @@
 
 public interface ISendMailService
 {
-    public Task SendMail(int eventId, string subject, string message);
+    public Task<bool> SendMail(int eventId, string subject, string message);
 }
