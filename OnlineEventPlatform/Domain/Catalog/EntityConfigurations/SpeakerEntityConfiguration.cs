@@ -8,8 +8,6 @@ public class SpeakerEntityConfiguration : IEntityTypeConfiguration<Speaker>
 {
     public void Configure(EntityTypeBuilder<Speaker> builder)
     {
-        builder.ToTable("speakers");
-
         builder.HasKey(s => s.Id);
 
         builder.Property(s => s.Id)

@@ -8,8 +8,6 @@ public class UserEventEntityConfiguration : IEntityTypeConfiguration<UserEvent>
 {
     public void Configure(EntityTypeBuilder<UserEvent> builder)
     {
-        builder.ToTable("userEvents");
-
         builder.HasKey(e => e.Id);
 
         builder.Property(e => e.Id)

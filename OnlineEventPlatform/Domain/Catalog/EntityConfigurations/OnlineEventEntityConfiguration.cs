@@ -8,8 +8,6 @@ public class OnlineEventEntityConfiguration : IEntityTypeConfiguration<OnlineEve
 {
     public void Configure(EntityTypeBuilder<OnlineEvent> builder)
     {
-        builder.ToTable("events");
-
         builder.HasKey(e => e.Id);
 
         builder.Property(e => e.Id)
