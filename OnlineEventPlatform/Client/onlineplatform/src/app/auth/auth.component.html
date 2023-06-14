@@ -1,0 +1,67 @@
+<div *ngIf="!isLoggedIn" class="login-container">
+  <!--
+  <ng-container *ngIf="isRegistrationFormVisible">
+    <form class="form" *ngIf="isRegistrationFormVisible">
+      <p class="title">Реєстрація</p>
+      <div class="flex">
+        <label>
+          <input type="text" [(ngModel)]="registrationFirstName" placeholder="" class="input" required>
+          <span>Ім'я</span>
+        </label>
+    
+        <label>
+          <input type="text" [(ngModel)]="registrationLastName" placeholder="" class="input" required>
+          <span>Прізвище</span>
+        </label>
+      </div>
+    
+      <label>
+        <input type="email" [(ngModel)]="registrationEmail" placeholder="" class="input" required>
+        <span>Адреса електронної пошти</span>
+      </label>
+    
+      <label>
+        <input type="password" [(ngModel)]="registrationPassword" placeholder="" class="input" required>
+        <span>Пароль</span>
+      </label>
+      <label>
+        <input type="password" [(ngModel)]="registrationConfirmPassword" placeholder="" class="input" required>
+        <span>Підтвердити пароль</span>
+      </label>
+    
+      <button (click)="register()" class="submit">Зареєструватися</button>
+      <p *ngIf="registrationError" class="error-message">Помилка реєстрації. Спробуйте ще раз.</p>
+      <p *ngIf="invalidEmail" class="error-message">Введіть правильний email.</p>
+      <p *ngIf="passwordMismatch" class="error-message">Паролі не співпадають.</p>
+    </form>
+  </ng-container>
+-->
+<!--
+  <ng-container *ngIf="!isRegistrationFormVisible">-->
+    <!-- Форма авторизації -->
+    <!--
+    <form class="form" [hidden]="isRegistrationFormVisible">
+      <p class="title">Авторизація</p>
+      <label>
+        <input type="email" [(ngModel)]="loginRequest!.email" placeholder="" class="input" required>
+        <span>Адреса електронної пошти</span>
+      </label>
+    
+      <label>
+        <input type="password" [(ngModel)]="loginRequest!.password" placeholder="" class="input" required>
+        <span>Пароль</span>
+      </label>
+      <button (click)="login()" class="submit">Увійти</button>
+      <p *ngIf="loginError" class="error-message">Помилка авторизації. Перевірте учетні дані.</p> 
+    </form>
+  </ng-container>
+-->
+  <!-- Кнопка перемикач -->
+  <!--
+  <div class="button-container">
+    <button class="switch-submit" (click)="isRegistrationFormVisible = !isRegistrationFormVisible">
+      <span class="switch-text">{{ isRegistrationFormVisible ? 'Я вже зареєстрований' : 'Зареєструватися' }}</span>
+    </button>
+  </div>
+</div>
+-->

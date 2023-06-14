@@ -1,0 +1,43 @@
+<div class="register-container">
+<form class="form">
+    <p class="title">Реєстрація</p>
+    <div class="flex">
+      <label>
+        <input type="text" [(ngModel)]="registerRequest.firstName" name="firstName" placeholder="" class="input" required>
+        <span>Ім'я</span>
+      </label>
+  
+      <label>
+        <input type="text" [(ngModel)]="registerRequest.lastName" name="lastName" placeholder="" class="input" required>
+        <span>Прізвище</span>
+      </label>
+    </div>
+  
+    <label>
+      <input type="email" [(ngModel)]="registerRequest.email" name="email" placeholder="" class="input" required>
+      <span>Адреса електронної пошти</span>
+    </label>
+  
+    <label>
+      <input type="password" [(ngModel)]="registerRequest.password" name="password" placeholder="" class="input" required>
+      <span>Пароль</span>
+    </label>
+    <label>
+      <input type="password" [(ngModel)]="registrationConfirmPassword" name="confirmPassword" placeholder="" class="input" required>
+      <span>Підтвердити пароль</span>
+    </label>
+  
+    <button (click)="register()" class="submit">Зареєструватися</button>
+    <p *ngIf="registrationError" class="error-message">Помилка реєстрації. Спробуйте ще раз.</p>
+    <p *ngIf="invalidEmail" class="error-message">Введіть правильний email.</p>
+    <p *ngIf="passwordMismatch" class="error-message">Паролі не співпадають.</p>
+  </form>
+  <div class="button-container">
+    <p class="switch-text"> Вже маєте аккаунт?
+      <a class="switch-text" routerLink="/auth">Увійти</a>
+    </p>
+  </div>
+  <div *ngIf="registrationSuccess" class="success-message">
+    Реєстрація пройшла успішно! ID нового користувача: {{ userId }}
+  </div>
+  </div>

@@ -1,0 +1,22 @@
+<div class="nav-wrapper">
+    <nav>
+      <ul class="nav-list">
+        <li *ngIf="isLoggedIn && (isAdmin || isSuperAdmin)" class="nav-item"><a class="nav-link" routerLink="/adminpanel">Адміністративна панель</a></li>
+        <li class="nav-item"><a class="nav-link" routerLink="/">Головна</a></li>
+      </ul>
+    </nav>
+    <nav *ngIf="!isLoggedIn" class="my">
+      <ul class="nav-list">
+        <li class="nav-item"><a class="nav-link" routerLink="/auth">Увійти</a></li>
+      </ul>
+    </nav>
+    
+    <nav *ngIf="isLoggedIn" class="my">
+      <ul class="nav-list">
+        <li class="nav-item"><a class="nav-link" routerLink="/userevents">Мої курси</a></li>
+        <li class="nav-item"><a class="nav-link" routerLink="/profile">Профіль</a></li>
+        <li class="nav-item"><button class="nav-link nav-link-button" (click)="logout()">Вийти</button></li>
+        <li class="nav-item">Вітаємо, {{userName}}</li>
+      </ul>
+    </nav>
+  </div>

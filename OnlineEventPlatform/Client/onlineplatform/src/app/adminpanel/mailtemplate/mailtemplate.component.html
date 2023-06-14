@@ -1,0 +1,61 @@
+<div class="wrapper">
+    <div class="rates">
+      <div class="rates-table">
+        <kendo-grid
+        class="rates-grid"
+        [height]="575"
+        [pageable]="true"
+        [data]="gridData | async"
+        [pageSize]="10"
+        [sortable]="true"
+        (edit)="updateHandler($event)"
+        (remove)="removeHandler($event)"
+        (add)="addHandler()">
+          <ng-template kendoGridToolbarTemplate>
+            <button kendoGridAddCommand>Додати новий шаблон</button>
+          </ng-template>
+          <kendo-grid-column field="name" title="Ім'я"></kendo-grid-column>
+          <kendo-grid-command-column [columnMenu]="false" title="Дії" [width]="160">
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <button kendoGridEditCommand [primary]="true">Редагувати</button>
+            <button kendoGridRemoveCommand>Видалити</button>
+          </ng-template>
+          </kendo-grid-command-column>
+        </kendo-grid>
+      </div>
+    </div>
+  </div>
+  
+  <kendo-dialog *ngIf="isCreateDialog" title="Додати новий шаблон" (close)="closeSpeakerCreation()" [width]="700">
+    <form [formGroup]="templateForm!" (ngSubmit)="onFormSubmit()">
+      <div class="form-choice">
+        <span>Ім'я: </span>
+        <kendo-textbox formControlName="name" showSuccessIcon="initial" showErrorIcon="initial"></kendo-textbox>
+      </div>
+      <div class="form-choice">
+        <span>Прізвище:</span>
+        <kendo-textbox formControlName="html" showSuccessIcon="initial" showErrorIcon="initial"></kendo-textbox>
+      </div>
+      <div class="form-choice">
+        <span>Позиція: </span>
+        <kendo-textbox formControlName="css" showSuccessIcon="initial" showErrorIcon="initial"></kendo-textbox>
+      </div>
+      <div class="action-buttons">
+        <button kendoButton type="button" (click)="closeSpeakerCreation()">Відмінити</button>
+        <div>
+          <button [disabled]="!templateForm!.valid" kendoButton type="submit" themeColor="primary">Зберегти</button>
+        </div>
+      </div>
+    </form>
+  </kendo-dialog>
+  
+  <kendo-dialog title="Видалити шаблон" *ngIf="isDeleteDialog" (close)="closeDeletionDialog()" [minWidth]="250"
+    [width]="450">
+    <p style="margin: 30px; text-align: center;">
+      Ви впевнені, що хочете видалити {{ templateToDelete!.name }}?
+    </p>
+    <kendo-dialog-actions>
+      <button kendoButton (click)="deleteTemplate()" themeColor="primary">Видалити</button>
+      <button kendoButton (click)="closeDeletionDialog()">Відмінити</button>
+    </kendo-dialog-actions>
+  </kendo-dialog>

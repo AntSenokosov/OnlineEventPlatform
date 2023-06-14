@@ -1,0 +1,175 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome Email</title>
+    <style>
+        body {
+            background-color: #f4f4f4;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .hidden-text {
+            display: none;
+            font-size: 1px;
+            color: #fefefe;
+            line-height: 1px;
+            font-family: 'Lato', Helvetica, Arial, sans-serif;
+            max-height: 0px;
+            max-width: 0px;
+            opacity: 0;
+            overflow: hidden;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background-color: #FFA73B;
+            padding: 40px 10px;
+        }
+
+        .header-logo {
+            padding: 40px 20px 20px 20px;
+            border-radius: 4px 4px 0 0;
+            color: #111111;
+            font-family: 'Lato', Helvetica, Arial, sans-serif;
+            font-size: 48px;
+            font-weight: 400;
+            letter-spacing: 4px;
+            line-height: 48px;
+            text-align: center;
+        }
+
+        .header-logo h1 {
+            font-size: 48px;
+            font-weight: 400;
+            margin: 2;
+        }
+
+        .content {
+            padding: 20px 30px;
+            background-color: #ffffff;
+            color: #666666;
+            font-family: 'Lato', Helvetica, Arial, sans-serif;
+            font-size: 18px;
+            font-weight: 400;
+            line-height: 25px;
+        }
+
+        .content p {
+            margin: 0;
+        }
+
+        .button-container {
+            padding: 20px 30px 60px 30px;
+        }
+
+        .button {
+            border-radius: 3px;
+            background-color: #FFA73B;
+            display: inline-block;
+            font-size: 20px;
+            font-family: Helvetica, Arial, sans-serif;
+            color: #ffffff;
+            text-decoration: none;
+            padding: 15px 25px;
+            border: 1px solid #FFA73B;
+        }
+
+        .button a {
+            color: #ffffff;
+            text-decoration: none;
+        }
+
+        .link-container {
+            padding: 0px 30px;
+        }
+
+        .link {
+            color: #FFA73B;
+        }
+
+        .footer {
+            padding: 30px 10px 0px 10px;
+            background-color: #f4f4f4;
+        }
+
+        .footer-content {
+            padding: 30px;
+            background-color: #FFECD1;
+            border-radius: 4px;
+            color: #666666;
+            font-family: 'Lato', Helvetica, Arial, sans-serif;
+            font-size: 18px;
+            font-weight: 400;
+            line-height: 25px;
+        }
+
+        .footer-content h2 {
+            font-size: 20px;
+            font-weight: 400;
+            color: #111111;
+            margin: 0;
+        }
+
+        .footer-content a {
+            color: #FFA73B;
+        }
+    </style>
+</head>
+
+<body>
+<div class="hidden-text">We're thrilled to have you here! Get ready to dive into your new account.</div>
+<div class="container">
+    <div class="header">
+        <div class="header-logo">
+            <h1>Welcome @Model?.Name!</h1>
+            <img src="https://img.icons8.com/clouds/100/000000/handshake.png" width="125" height="120" style="display: block; border: 0;" alt="Handshake Icon" />
+        </div>
+    </div>
+    <div class="content">
+        <p>We're excited to have you get started at the MailKit Demo Platform. First, you need to confirm your account. Just press the button below.</p>
+    </div>
+    <div class="button-container">
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+            <tr>
+                <td align="center">
+                    <table border="0" cellspacing="0" cellpadding="0">
+                        <tr>
+                            <td align="center">
+                                <a href="#" target="_blank" class="button">Confirm Account</a>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="link-container">
+        <div class="content">
+            <p>If that doesn't work, copy and paste the following link in your browser:</p>
+            <p><a href="#" target="_blank" class="link">Some URL to activate the account</a></p>
+            <p>If you have any questions, just reply to this email—we're always happy to help out.</p>
+        </div>
+    </div>
+    <div class="content">
+        <p>Cheers,<br>BBB Team</p>
+    </div>
+</div>
+<div class="footer">
+    <div class="container">
+        <div class="footer-content">
+            <h2>Need more help?</h2>
+            <p><a href="#" target="_blank">We're here to help you out</a></p>
+        </div>
+    </div>
+</div>
+</body>
+
+</html>
