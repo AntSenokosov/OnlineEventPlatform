@@ -1,0 +1,112 @@
+<!--
+<div class="panel-container">
+  <div class="panel-item">
+    <div class="panel-header">
+      <h2>{{ eventDetail.name }}</h2>
+    </div>
+    <div class="panel-content">
+      <p>{{ eventDetail.description }}</p>
+      <p>{{ eventDetail.aboutEvent }}</p>
+      <div>
+        <h2>Коли: {{ eventDetail.date }}</h2>
+        <h2>О котрій: {{ eventDetail.time }}</h2>
+      </div>
+      <h2>Де: {{eventDetail.placeEvent}}</h2>
+
+      <div *ngIf="eventDetail.speakers.length > 0">
+        <h2>Спікери</h2>
+        <div *ngFor="let speaker of eventDetail.speakers">
+          <p>{{ speaker.firstName }} {{ speaker.lastName }}</p>
+          <p>{{ speaker.position }} {{ speaker.shortDescription }}</p>
+          <p>{{ speaker.longDescription }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="panel-sidebar">
+    <div>
+      <img class="event-image" src="assets/default.png" alt="Event Image">
+    </div>
+    <div *ngIf="isLogged">
+      <div *ngIf="isUserRegister">
+        <p>Ви вже зареєстровані на цей захід</p>
+      </div>
+      <div *ngIf="!isUserRegister">
+        <button (click)="registerEvent(eventId)">Зареєструватися</button>
+      </div>
+    </div>
+    <div *ngIf="!isLogged">
+      <p>Для реєстрації на захід необхідно авторизуватися</p>
+    </div>
+  </div>
+</div>
+-->
+<!--
+<div class="content-center">
+  <div class="event-content">
+    <div>
+      <h2>{{eventDetail.name}}</h2>
+    </div>
+    <div>
+      <p>{{eventDetail.description}}</p>
+    </div>
+    <div>
+      {{eventDetail.aboutEvent}}
+    </div>
+  </div>
+  <div class="event-detail">
+    <div>
+      <div>
+        <img class="event-image" src="assets/default.png" alt="Event Image">
+      </div>
+    </div>
+    <div>
+      <p>Коли: {{eventDetail.date}}</p>
+      <p>О котрій: {{eventDetail.time}}</p>
+      <p>Де: {{eventDetail.placeEvent}}</p>
+    </div>
+  </div>
+</div>
+-->
+<div class="content-center">
+  <div class="event-content">
+    <div>
+      <h2>{{eventDetail.name}}</h2>
+    </div>
+    <div>
+      {{eventDetail.description}}
+    </div>
+    <div>
+      {{eventDetail.aboutEvent}}
+    </div>
+    <div *ngIf="eventDetail.speakers">
+      <h2>Спікери</h2>
+      <div *ngFor="let speaker of eventDetail.speakers">
+        <p>{{ speaker.firstName }} {{ speaker.lastName }}</p>
+        <p>{{ speaker.position }} {{ speaker.shortDescription }}</p>
+        <p>{{ speaker.longDescription }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="event-detail">
+    <div>
+      <p>Коли: {{eventDetail.date | date:'dd/MM/yyyy'}}</p>
+      <p>О котрій: {{eventDetail.time}}</p>
+    </div>
+    <div>
+      <p>Де: {{eventDetail.placeEvent}}</p>
+    </div>
+    <div *ngIf="isLogged">
+      <div *ngIf="isUserRegister">
+        <p>Ви вже зареєстровані на цей захід</p>
+        <button (click)="unregisterEvent(eventId)">Відписатися</button>
+      </div>
+      <div *ngIf="!isUserRegister">
+        <button (click)="registerEvent(eventId)">Зареєструватися</button>
+      </div>
+    </div>
+    <div *ngIf="!isLogged">
+      <p>Для реєстрації на захід необхідно авторизуватися</p>
+    </div>
+  </div>
+</div>

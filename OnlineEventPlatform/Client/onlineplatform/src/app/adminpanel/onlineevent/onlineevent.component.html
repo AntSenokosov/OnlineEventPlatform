@@ -1,0 +1,134 @@
+<h2>Онлайн-події</h2>
+
+<div class="wrapper">
+  <div class="rates">
+    <div class="rates-table">
+      <kendo-grid
+        class="rates-grid"
+        [height]="575"
+        [pageable]="true"
+        [data]="gridData | async"
+        [pageSize]="10"
+        [sortable]="true"
+        (edit)="updateHandler($event)"
+        (remove)="removeHandler($event)"
+        (add)="addHandler()"
+      >
+        <ng-template kendoGridToolbarTemplate>
+          <button kendoGridAddCommand>Додати нову подію</button>
+        </ng-template>
+        <kendo-grid-column field="name" title="Назва"></kendo-grid-column>
+        <kendo-grid-column field="type" title="Тип заходу"></kendo-grid-column>
+        <kendo-grid-column field="date" title="Дата"></kendo-grid-column>
+        <kendo-grid-column field="time" title="Час"></kendo-grid-column>
+        <kendo-grid-command-column [columnMenu]="false" title="Розсилка" [width]="160">
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <button>Розіслати одному користувачу</button>
+            <button>Розіслати всім</button>
+          </ng-template>
+        </kendo-grid-command-column>
+        <kendo-grid-command-column [columnMenu]="false" title="Дії" [width]="160">
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <button kendoGridEditCommand [primary]="true">Редагувати</button>
+            <button kendoGridRemoveCommand>Видалити</button>
+          </ng-template>
+        </kendo-grid-command-column>
+      </kendo-grid>
+    </div>
+  </div>
+</div>
+
+<kendo-dialog *ngIf="isCreateDialog" title="Додати нову подію" (close)="closeCreateDialog()" [width]="700">
+  <form [formGroup]="eventForm!" (ngSubmit)="onFormSubmit()">
+    <h3 class="form-title">Додати нову подію</h3>
+    <div class="form-choice">
+      <span>Тип:</span>
+      <kendo-dropdownlist
+        formControlName="type"
+        [data]="typesData"
+        [textField]="'name'"
+        [valueField]="'id'"
+        [(ngModel)]="selectedType"
+        (valueChange)="onTypeChange($event)"
+      ></kendo-dropdownlist>
+    </div>
+    <div class="form-choice">
+      <span>Назва:</span>
+      <kendo-textbox formControlName="name" showSuccessIcon="initial" showErrorIcon="initial"></kendo-textbox>
+    </div>
+    <div class="form-choice">
+      <span>Опис: </span>
+      <kendo-textbox formControlName="description" showSuccessIcon="initial" showErrorIcon="initial"></kendo-textbox>
+    </div>
+    <div class="form-choice">
+      <span>Дата: </span>
+      <kendo-datepicker formControlName="date" showSuccessIcon="initial" showErrorIcon="initial"></kendo-datepicker>
+    </div>
+    <div class="form-choice">
+      <span>Час: </span>
+      <kendo-timepicker formControlName="time" [format]="'HH:mm:ss'" showSuccessIcon="initial" showErrorIcon="initial"></kendo-timepicker>
+    </div>
+    <div class="form-choice">
+      <span>Про захід: </span>
+      <kendo-textarea formControlName="aboutEvent" showSuccessIcon="initial" showErrorIcon="initial"></kendo-textarea>
+    </div>
+    <div class="form-choice">
+      <span>Фото: </span>
+      <input type="file" (change)="handlePhotoUpload($event)" />
+    </div>
+    <div class="form-choice">
+      <span>Спікери: </span>
+      <kendo-multiselect
+        formControlName="speakers"
+        [data]="speakersData"
+        [textField]="'firstName'"
+        [valueField]="'id'"
+        [(ngModel)]="selectedSpeakers"
+      >
+        <ng-template kendoMultiSelectItemTemplate let-dataItem>
+          {{ dataItem.firstName }} {{ dataItem.lastName }}
+        </ng-template>
+      </kendo-multiselect>
+    </div>
+    <div class="form-choice">
+      <span>Платформа: </span>
+      <kendo-dropdownlist
+        formControlName="platform"
+        [data]="platformsData"
+        [textField]="'name'"
+        [valueField]="'id'"
+        [(ngModel)]="selectedPlatform"
+        (valueChange)="onPlatformChange($event)"
+      ></kendo-dropdownlist>
+    </div>
+    <div class="form-choice">
+      <span>Посилання: </span>
+      <kendo-textbox formControlName="link" showSuccessIcon="initial" showErrorIcon="initial"></kendo-textbox>
+    </div>
+    <div class="form-choice">
+      <span>Номер посилання: </span>
+      <kendo-textbox formControlName="meetingId" showSuccessIcon="initial" showErrorIcon="initial"></kendo-textbox>
+    </div>
+    <div class="form-choice">
+      <span>Пароль посилання: </span>
+      <kendo-textbox formControlName="password" showSuccessIcon="initial" showErrorIcon="initial"></kendo-textbox>
+    </div>
+    <div class="action-buttons">
+      <button kendoButton type="button" (click)="closeCreateDialog()">Відмінити</button>
+      <div>
+        <button [disabled]="!eventForm!.valid" kendoButton type="submit" themeColor="primary">Зберегти</button>
+      </div>
+    </div>
+  </form>
+</kendo-dialog>
+
+<kendo-dialog title="Видалити подію" *ngIf="isDeleteDialog" (close)="closeDeleteDialog()" [minWidth]="250"
+  [width]="450">
+  <p style="margin: 30px; text-align: center;">
+    Ви впевнені, що хочете видалити {{ eventToDelete!.name }}?
+  </p>
+  <kendo-dialog-actions>
+    <button kendoButton (click)="deleteEvent()" themeColor="primary">Видалити</button>
+    <button kendoButton (click)="closeDeleteDialog()">Відмінити</button>
+  </kendo-dialog-actions>
+</kendo-dialog>

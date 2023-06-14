@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@progress/kendo-angular-inputs": "^12.0.0",
+    "@progress/kendo-angular-label": "^12.0.0"
+  }
+}

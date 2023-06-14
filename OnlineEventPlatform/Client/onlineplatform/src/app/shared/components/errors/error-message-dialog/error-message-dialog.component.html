@@ -1,0 +1,6 @@
+<kendo-dialog [title]="dialogHeader" *ngIf="opened" (close)="closeError('close')" [minWidth]="250" [width]="450">
+    <p style="margin: 30px; text-align: center; white-space: pre;word-break: break-all;">{{ errorDescription }}</p>
+    <kendo-dialog-actions>
+        <button kendoButton size="medium" style="max-width: 50px" data-sid="errorDialogCancelButton" (click)="closeError('close')" primary="true">Okay</button>
+    </kendo-dialog-actions>
+</kendo-dialog>
