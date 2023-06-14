@@ -10,17 +10,17 @@ public interface ISpeakerRepository
     public Task<int> AddSpeakerAsync(
         string firstName,
         string lastName,
-        int departmentId,
-        int positionId,
-        string description);
+        string? position,
+        string? shortDescription,
+        string? longDescription);
 
     public Task<int?> UpdateSpeakerAsync(
         int id,
         string firstName,
         string lastName,
-        int departmentId,
-        int positionId,
-        string description);
+        string? position,
+        string? shortDescription,
+        string? longDescription);
 
     public Task<int?> RemoveSpeakerAsync(int id);
 }

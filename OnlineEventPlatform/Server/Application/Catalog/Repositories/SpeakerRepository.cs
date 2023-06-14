@@ -35,17 +35,17 @@ public class SpeakerRepository : ISpeakerRepository
     public async Task<int> AddSpeakerAsync(
         string firstName,
         string lastName,
-        int departmentId,
-        int positionId,
-        string description)
+        string? position,
+        string? shortDescription,
+        string? longDescription)
     {
         var speaker = new Speaker()
         {
             FirstName = firstName,
             LastName = lastName,
-            DepartmentId = departmentId,
-            PositionId = positionId,
-            Description = description
+            Position = position,
+            ShortDescription = shortDescription,
+            LongDescription = longDescription
         };
 
         var newSpeaker = await _db.Speakers.AddAsync(speaker);
@@ -58,9 +58,9 @@ public class SpeakerRepository : ISpeakerRepository
         int id,
         string firstName,
         string lastName,
-        int departmentId,
-        int positionId,
-        string description)
+        string? position,
+        string? shortDescription,
+        string? longDescription)
     {
         var speaker = await _db.Speakers.FirstOrDefaultAsync(s => s.Id == id);
 
@@ -71,9 +71,9 @@ public class SpeakerRepository : ISpeakerRepository
 
         speaker.FirstName = firstName;
         speaker.LastName = lastName;
-        speaker.DepartmentId = departmentId;
-        speaker.PositionId = positionId;
-        speaker.Description = description;
+        speaker.Position = position;
+        speaker.ShortDescription = shortDescription;
+        speaker.LongDescription = longDescription;
 
         var newSpeaker = _db.Speakers.Update(speaker);
         await _db.SaveChangesAsync();

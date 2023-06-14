@@ -41,7 +41,7 @@ public class UserEventService : BaseDataService<OnlineEventContext>, IUserEventS
                 Id = e.Id,
                 Name = e.Name,
                 Description = e.Description,
-                DateAndTime = e.DateAndTime,
+                Date = e.Date,
                 AboutEvent = e.AboutEvent
             });
 
@@ -66,6 +66,16 @@ public class UserEventService : BaseDataService<OnlineEventContext>, IUserEventS
             var userEvent = await _eventRepository.DeleteEvent(eventId);
 
             return _mapper.Map<int?>(userEvent);
+        });
+    }
+
+    public async Task<bool> Check(int eventId)
+    {
+        return await ExecuteSafeAsync(async () =>
+        {
+            var user = await _eventRepository.Check(eventId);
+
+            return _mapper.Map<bool>(user);
         });
     }
 }

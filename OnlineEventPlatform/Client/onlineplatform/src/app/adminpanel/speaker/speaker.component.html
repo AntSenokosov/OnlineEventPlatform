@@ -1,0 +1,73 @@
+<div class="wrapper">
+  <div class="rates">
+    <div class="rates-table">
+      <kendo-grid
+      class="rates-grid"
+      [height]="575"
+      [pageable]="true"
+      [data]="gridData | async"
+      [pageSize]="10"
+      [sortable]="true"
+      (edit)="updateHandler($event)"
+      (remove)="removeHandler($event)"
+      (add)="addHandler()">
+        <ng-template kendoGridToolbarTemplate>
+          <button kendoGridAddCommand>Додати нового спікера</button>
+        </ng-template>
+        <kendo-grid-column field="firstName" title="Ім'я"></kendo-grid-column>
+        <kendo-grid-column field="lastName" title="Прізвище"></kendo-grid-column>
+        <kendo-grid-column field="position" title="Позиція"></kendo-grid-column>
+        <kendo-grid-column field="shortDescription" title="Короткий опис"></kendo-grid-column>
+        <kendo-grid-command-column [columnMenu]="false" title="Дії" [width]="160">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <button kendoGridEditCommand [primary]="true">Редагувати</button>
+          <button kendoGridRemoveCommand>Видалити</button>
+        </ng-template>
+        </kendo-grid-command-column>
+      </kendo-grid>
+    </div>
+  </div>
+</div>
+
+<kendo-dialog *ngIf="isCreateDialog" title="Додати нового спікера" (close)="closeSpeakerCreation()" [width]="700">
+  <form [formGroup]="speakerForm!" (ngSubmit)="onFormSubmit()">
+    <h3 class="form-title">Додати нового спікера</h3>
+    <div class="form-choice">
+      <span>Ім'я: </span>
+      <kendo-textbox formControlName="firstName" showSuccessIcon="initial" showErrorIcon="initial"></kendo-textbox>
+    </div>
+    <div class="form-choice">
+      <span>Прізвище:</span>
+      <kendo-textbox formControlName="lastName" showSuccessIcon="initial" showErrorIcon="initial"></kendo-textbox>
+    </div>
+    <div class="form-choice">
+      <span>Позиція: </span>
+      <kendo-textbox formControlName="position" showSuccessIcon="initial" showErrorIcon="initial"></kendo-textbox>
+    </div>
+    <div class="form-choice">
+      <span>Коротки опис: </span>
+      <kendo-textbox formControlName="shortDescription" showSuccessIcon="initial" showErrorIcon="initial"></kendo-textbox>
+    </div>
+    <div class="form-choice">
+      <span>Довгий опис: </span>
+      <kendo-textbox formControlName="longDescription" showSuccessIcon="initial" showErrorIcon="initial"></kendo-textbox>
+    </div>
+    <div class="action-buttons">
+      <button kendoButton type="button" (click)="closeSpeakerCreation()">Відмінити</button>
+      <div>
+        <button [disabled]="!speakerForm!.valid" kendoButton type="submit" themeColor="primary">Зберегти</button>
+      </div>
+    </div>
+  </form>
+</kendo-dialog>
+
+<kendo-dialog title="Видалити спікера" *ngIf="isDeleteDialog" (close)="closeDeletionDialog()" [minWidth]="250"
+  [width]="450">
+  <p style="margin: 30px; text-align: center;">
+    Ви впевнені, що хочете видалити {{ speakerToDelete!.firstName }} {{speakerToDelete!.lastName}}?
+  </p>
+  <kendo-dialog-actions>
+    <button kendoButton (click)="deleteSpeaker()" themeColor="primary">Видалити</button>
+    <button kendoButton (click)="closeDeletionDialog()">Відмінити</button>
+  </kendo-dialog-actions>
+</kendo-dialog>

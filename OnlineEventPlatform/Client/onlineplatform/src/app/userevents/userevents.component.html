@@ -1,0 +1,9 @@
+<div class="myevents">
+    <div class="event-card" *ngFor="let event of events">
+      <h3 class="event-title">{{ event.id }}</h3>
+      <h3 class="event-title">{{ event.name }}</h3>
+      <p class="event-description">{{ event.description }}</p>
+      <button (click)="onEventClicked(event.id)">Детальніше</button>
+      <button (click)="deleteUserEvent(event.id)">Відписатись від заходу</button>
+    </div>
+  </div>

@@ -1,0 +1,13 @@
+<div class="container">
+  <div class="catalog">
+    <div class="event-card" *ngFor="let event of onlineEvents">
+      <img class="event-image" [src]="event.photo ? event.photo : 'assets/default.png'" alt="Event Image">
+
+      <div class="event-content">
+        <h3 class="event-title" [innerHTML]="splitText(event.name, 40)"></h3>
+        <p class="event-description long-text">{{ event.description }}</p>
+        <button (click)="onEventClicked(event.id)">Детальніше</button>
+      </div>
+    </div>
+  </div>
+</div>

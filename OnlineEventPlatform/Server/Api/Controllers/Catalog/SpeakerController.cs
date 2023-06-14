@@ -3,11 +3,14 @@ using Api.Requests.Catalog;
 using Api.Responses;
 using Application.Catalog;
 using Application.Catalog.Services.Interfaces;
+using Infrastructure.Security;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers.Catalog;
 
 [Route("speakers")]
+[Authorize(AuthenticationSchemes = JwtIssuerOptions.Schemes)]
 public class SpeakerController : Controller
 {
     private readonly ISpeakerService _speakerService;
@@ -50,9 +53,9 @@ public class SpeakerController : Controller
             Id = await _speakerService.AddSpeakerAsync(
                 request.FirstName,
                 request.LastName,
-                request.DepartmentId,
-                request.PositionId,
-                request.Description)
+                request.Position,
+                request.ShortDescription,
+                request.LongDescription)
         };
 
         return Ok(response);
@@ -65,7 +68,7 @@ public class SpeakerController : Controller
         var response = new UpdateResponse()
         {
             Id = await _speakerService.UpdateSpeakerAsync(
-                id, request.FirstName, request.LastName, request.DepartmentId, request.PositionId, request.Description)
+                id, request.FirstName, request.LastName, request.Position, request.ShortDescription, request.LongDescription)
         };
 
         return Ok(response);

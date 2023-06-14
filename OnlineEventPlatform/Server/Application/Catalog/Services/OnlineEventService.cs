@@ -4,6 +4,7 @@ using Application.Catalog.Repositories.Interfaces;
 using Infrastructure.Database;
 using Infrastructure.Services;
 using Infrastructure.Services.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
 namespace Application.Catalog.Services;
@@ -26,21 +27,7 @@ public class OnlineEventService : BaseDataService<OnlineEventContext>, IOnlineEv
 
     public async Task<IEnumerable<OnlineEventDto>> GetOnlineEventsAsync()
     {
-        return await ExecuteSafeAsync(async () =>
-        {
-            var events = await _eventRepository.GetOnlineEventsAsync();
-
-            var eventsDto = events.Select(e => new OnlineEventDto()
-            {
-                Id = e.Id,
-                Name = e.Name,
-                Description = e.Description,
-                DateAndTime = e.DateAndTime,
-                AboutEvent = e.AboutEvent
-            });
-
-            return eventsDto;
-        });
+        return await ExecuteSafeAsync(async () => await _eventRepository.GetOnlineEventsAsync());
     }
 
     public async Task<OnlineEventDto?> GetOnlineEventAsync(int id)
@@ -59,7 +46,8 @@ public class OnlineEventService : BaseDataService<OnlineEventContext>, IOnlineEv
                 Id = onlineEvent.Id,
                 Name = onlineEvent.Name,
                 Description = onlineEvent.Description,
-                DateAndTime = onlineEvent.DateAndTime,
+                Date = onlineEvent.Date,
+                Time = onlineEvent.Time,
                 AboutEvent = onlineEvent.AboutEvent
             };
 
@@ -67,22 +55,79 @@ public class OnlineEventService : BaseDataService<OnlineEventContext>, IOnlineEv
         });
     }
 
-    public async Task<int> AddOnlineEventAsync(string name, string description, DateTime dateTime, string aboutEvent)
+    public async Task<int> AddOnlineEventAsync(
+        int type,
+        string name,
+        string description,
+        DateTime date,
+        TimeSpan time,
+        string aboutEvent,
+        IFormFile? photo,
+        IEnumerable<int>? speakers,
+        int platform,
+        string? link,
+        string? meetingId,
+        string? password)
     {
         return await ExecuteSafeAsync(async () =>
         {
+            if (photo != null)
+            {
+                using var memoryStream = new MemoryStream();
+                await photo.CopyToAsync(memoryStream);
+                memoryStream.ToArray();
+            }
+
             var onlineEvent = await _eventRepository
-                .AddOnlineEventAsync(name, description, dateTime, aboutEvent);
+                .AddOnlineEventAsync(
+                    type,
+                    name,
+                    description,
+                    date,
+                    time,
+                    aboutEvent,
+                    photo,
+                    speakers,
+                    platform,
+                    link,
+                    meetingId,
+                    password);
             return _mapper.Map<int>(onlineEvent);
         });
     }
 
-    public async Task<int?> UpdateOnlineEventAsync(int id, string name, string description, DateTime dateTime, string aboutEvent)
+    public async Task<int?> UpdateOnlineEventAsync(
+        int id,
+        int type,
+        string name,
+        string description,
+        DateTime date,
+        TimeSpan time,
+        string aboutEvent,
+        IFormFile? photo,
+        IEnumerable<int>? speakers,
+        int platform,
+        string? link,
+        string? meetingId,
+        string? password)
     {
         return await ExecuteSafeAsync(async () =>
         {
             var onlineEvent = await _eventRepository
-                .UpdateOnlineEventAsync(id, name, description, dateTime, aboutEvent);
+                .UpdateOnlineEventAsync(
+                    id,
+                    type,
+                    name,
+                    description,
+                    date,
+                    time,
+                    aboutEvent,
+                    photo,
+                    speakers,
+                    platform,
+                    link,
+                    meetingId,
+                    password);
             return _mapper.Map<int?>(onlineEvent);
         });
     }

@@ -3,11 +3,14 @@ using Api.Requests.Catalog;
 using Api.Responses;
 using Application.Catalog;
 using Application.Catalog.Services.Interfaces;
+using Infrastructure.Security;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers.Catalog;
 
 [Route("onlineevents")]
+[Authorize(AuthenticationSchemes = JwtIssuerOptions.Schemes)]
 public class OnlineEventController : Controller
 {
     private readonly IOnlineEventService _eventService;
@@ -43,15 +46,23 @@ public class OnlineEventController : Controller
 
     [HttpPost("create")]
     [ProducesResponseType(typeof(AddResponse), (int)HttpStatusCode.OK)]
-    public async Task<IActionResult> CreateEvent([FromBody] OnlineEventCreateUpdateRequest request)
+    public async Task<IActionResult> CreateEvent([FromForm] OnlineEventCreateUpdateRequest request, IFormFile file)
     {
         var response = new AddResponse()
         {
             Id = await _eventService.AddOnlineEventAsync(
+                request.Type,
                 request.Name,
                 request.Description,
-                request.DateAndTime,
-                request.AboutEvent)
+                request.Date,
+                request.Time,
+                request.AboutEvent,
+                file,
+                request.Speakers,
+                request.Platform,
+                request.Link,
+                request.MeetingId,
+                request.Password)
         };
 
         return Ok(response);
@@ -59,16 +70,24 @@ public class OnlineEventController : Controller
 
     [HttpPut("{id}/update")]
     [ProducesResponseType(typeof(UpdateResponse), (int)HttpStatusCode.OK)]
-    public async Task<IActionResult> UpdateEvent([FromRoute] int id, [FromBody] OnlineEventCreateUpdateRequest request)
+    public async Task<IActionResult> UpdateEvent([FromRoute] int id, [FromBody] OnlineEventCreateUpdateRequest request, [FromForm]IFormFile file)
     {
         var response = new UpdateResponse()
         {
             Id = await _eventService.UpdateOnlineEventAsync(
                     id,
+                    request.Type,
                     request.Name,
                     request.Description,
-                    request.DateAndTime,
-                    request.AboutEvent)
+                    request.Date,
+                    request.Time,
+                    request.AboutEvent,
+                    file,
+                    request.Speakers,
+                    request.Platform,
+                    request.Link,
+                    request.MeetingId,
+                    request.Password)
         };
 
         return Ok(response);

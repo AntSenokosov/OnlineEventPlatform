@@ -22,40 +22,122 @@ namespace Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.HasSequence("department_hilo")
-                .IncrementsBy(10);
-
             modelBuilder.HasSequence("event_hilo")
                 .IncrementsBy(10);
 
-            modelBuilder.HasSequence("position_hilo")
+            modelBuilder.HasSequence("eventplatform_hilo")
+                .IncrementsBy(10);
+
+            modelBuilder.HasSequence("eventspeakers_hilo")
+                .IncrementsBy(10);
+
+            modelBuilder.HasSequence("platform_hilo")
                 .IncrementsBy(10);
 
             modelBuilder.HasSequence("speaker_hilo")
                 .IncrementsBy(10);
 
+            modelBuilder.HasSequence("type_hilo")
+                .IncrementsBy(10);
+
             modelBuilder.HasSequence("user_hilo")
                 .IncrementsBy(10);
 
-            modelBuilder.Entity("Domain.Catalog.Entities.Department", b =>
+            modelBuilder.HasSequence("userevent_hilo")
+                .IncrementsBy(10);
+
+            modelBuilder.Entity("Domain.Catalog.Entities.EventPlatform", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseHiLo(b.Property<int>("Id"), "department_hilo");
+                    SqlServerPropertyBuilderExtensions.UseHiLo(b.Property<int>("Id"), "eventplatform_hilo");
+
+                    b.Property<int>("EventId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Link")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LinkId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PlatformId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EventId")
+                        .IsUnique();
+
+                    b.HasIndex("PlatformId");
+
+                    b.ToTable("EventPlatforms");
+                });
+
+            modelBuilder.Entity("Domain.Catalog.Entities.EventSpeaker", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseHiLo(b.Property<int>("Id"), "eventspeakers_hilo");
+
+                    b.Property<int>("EventId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SpeakerId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EventId");
+
+                    b.HasIndex("SpeakerId");
+
+                    b.ToTable("EventSpeakers");
+                });
+
+            modelBuilder.Entity("Domain.Catalog.Entities.EventType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseHiLo(b.Property<int>("Id"), "type_hilo");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Number")
+                    b.HasKey("Id");
+
+                    b.ToTable("TypeOfEvents");
+                });
+
+            modelBuilder.Entity("Domain.Catalog.Entities.MeetingPlatform", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseHiLo(b.Property<int>("Id"), "platform_hilo");
+
+                    b.Property<string>("Name")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Url")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("departments", (string)null);
+                    b.ToTable("MeetingPlatforms");
                 });
 
             modelBuilder.Entity("Domain.Catalog.Entities.OnlineEvent", b =>
@@ -70,7 +152,7 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("DateAndTime")
+                    b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
@@ -81,26 +163,20 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.Property<byte[]>("Photo")
+                        .HasColumnType("varbinary(max)");
 
-                    b.ToTable("events", (string)null);
-                });
+                    b.Property<TimeSpan>("Time")
+                        .HasColumnType("time");
 
-            modelBuilder.Entity("Domain.Catalog.Entities.Position", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("TypeId")
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseHiLo(b.Property<int>("Id"), "position_hilo");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
 
-                    b.ToTable("positions", (string)null);
+                    b.HasIndex("TypeId");
+
+                    b.ToTable("OnlineEvents");
                 });
 
             modelBuilder.Entity("Domain.Catalog.Entities.Speaker", b =>
@@ -111,12 +187,6 @@ namespace Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseHiLo(b.Property<int>("Id"), "speaker_hilo");
 
-                    b.Property<int>("DepartmentId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -125,16 +195,18 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PositionId")
-                        .HasColumnType("int");
+                    b.Property<string>("LongDescription")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Position")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ShortDescription")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DepartmentId");
-
-                    b.HasIndex("PositionId");
-
-                    b.ToTable("speakers", (string)null);
+                    b.ToTable("Speakers");
                 });
 
             modelBuilder.Entity("Domain.Identity.Entities.User", b =>
@@ -149,6 +221,10 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("GoogleAuthKey")
                         .HasColumnType("nvarchar(max)");
 
@@ -156,11 +232,21 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("varbinary(max)");
 
+                    b.Property<bool>("IsAdmin")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsGoogleAuthEnabled")
                         .HasColumnType("bit");
+
+                    b.Property<bool>("IsSuperAdmin")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<byte[]>("Salt")
                         .IsRequired()
@@ -171,7 +257,7 @@ namespace Infrastructure.Migrations
                     b.ToTable("Users", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.Identity.Entities.UserProfile", b =>
+            modelBuilder.Entity("Domain.Templates.MailTemplate", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -179,30 +265,25 @@ namespace Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Email")
+                    b.Property<string>("Css")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("DefaultTemplate")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Html")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Phone")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<bool>("WelcomeTemplate")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId")
-                        .IsUnique();
-
-                    b.ToTable("UserProfiles", (string)null);
+                    b.ToTable("MailTemplates");
                 });
 
             modelBuilder.Entity("Domain.UserEvents.Entities.UserEvent", b =>
@@ -211,7 +292,7 @@ namespace Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseHiLo(b.Property<int>("Id"), "userevent_hilo");
 
                     b.Property<int>("OnlineEventId")
                         .HasColumnType("int");
@@ -228,49 +309,53 @@ namespace Infrastructure.Migrations
                     b.ToTable("UserEvents");
                 });
 
-            modelBuilder.Entity("SpeakerEvent", b =>
+            modelBuilder.Entity("Domain.Catalog.Entities.EventPlatform", b =>
                 {
-                    b.Property<int>("EventId")
-                        .HasColumnType("int");
+                    b.HasOne("Domain.Catalog.Entities.OnlineEvent", "OnlineEvent")
+                        .WithOne("EventPlatform")
+                        .HasForeignKey("Domain.Catalog.Entities.EventPlatform", "EventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Property<int>("SpeakerId")
-                        .HasColumnType("int");
+                    b.HasOne("Domain.Catalog.Entities.MeetingPlatform", "MeetingPlatform")
+                        .WithMany("EventPlatforms")
+                        .HasForeignKey("PlatformId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasKey("EventId", "SpeakerId");
+                    b.Navigation("MeetingPlatform");
 
-                    b.HasIndex("SpeakerId");
-
-                    b.ToTable("SpeakerEvent");
+                    b.Navigation("OnlineEvent");
                 });
 
-            modelBuilder.Entity("Domain.Catalog.Entities.Speaker", b =>
+            modelBuilder.Entity("Domain.Catalog.Entities.EventSpeaker", b =>
                 {
-                    b.HasOne("Domain.Catalog.Entities.Department", "Department")
-                        .WithMany()
-                        .HasForeignKey("DepartmentId")
+                    b.HasOne("Domain.Catalog.Entities.OnlineEvent", "OnlineEvent")
+                        .WithMany("Speakers")
+                        .HasForeignKey("EventId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Domain.Catalog.Entities.Position", "Position")
-                        .WithMany()
-                        .HasForeignKey("PositionId")
+                    b.HasOne("Domain.Catalog.Entities.Speaker", "Speaker")
+                        .WithMany("Events")
+                        .HasForeignKey("SpeakerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Department");
+                    b.Navigation("OnlineEvent");
 
-                    b.Navigation("Position");
+                    b.Navigation("Speaker");
                 });
 
-            modelBuilder.Entity("Domain.Identity.Entities.UserProfile", b =>
+            modelBuilder.Entity("Domain.Catalog.Entities.OnlineEvent", b =>
                 {
-                    b.HasOne("Domain.Identity.Entities.User", "User")
-                        .WithOne("UserProfile")
-                        .HasForeignKey("Domain.Identity.Entities.UserProfile", "UserId")
+                    b.HasOne("Domain.Catalog.Entities.EventType", "Type")
+                        .WithMany("Events")
+                        .HasForeignKey("TypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("User");
+                    b.Navigation("Type");
                 });
 
             modelBuilder.Entity("Domain.UserEvents.Entities.UserEvent", b =>
@@ -292,25 +377,27 @@ namespace Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("SpeakerEvent", b =>
+            modelBuilder.Entity("Domain.Catalog.Entities.EventType", b =>
                 {
-                    b.HasOne("Domain.Catalog.Entities.OnlineEvent", null)
-                        .WithMany()
-                        .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Catalog.Entities.Speaker", null)
-                        .WithMany()
-                        .HasForeignKey("SpeakerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Events");
                 });
 
-            modelBuilder.Entity("Domain.Identity.Entities.User", b =>
+            modelBuilder.Entity("Domain.Catalog.Entities.MeetingPlatform", b =>
                 {
-                    b.Navigation("UserProfile")
+                    b.Navigation("EventPlatforms");
+                });
+
+            modelBuilder.Entity("Domain.Catalog.Entities.OnlineEvent", b =>
+                {
+                    b.Navigation("EventPlatform")
                         .IsRequired();
+
+                    b.Navigation("Speakers");
+                });
+
+            modelBuilder.Entity("Domain.Catalog.Entities.Speaker", b =>
+                {
+                    b.Navigation("Events");
                 });
 #pragma warning restore 612, 618
         }

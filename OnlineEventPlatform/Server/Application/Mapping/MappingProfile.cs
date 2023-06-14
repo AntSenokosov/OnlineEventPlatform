@@ -8,8 +8,6 @@ public class MappingProfile : Profile
 {
     public MappingProfile()
     {
-        CreateMap<Department, DepartmentDto>();
-        CreateMap<Position, PositionDto>();
         CreateMap<Speaker, SpeakerDto>();
         CreateMap<OnlineEvent, OnlineEventDto>();
     }

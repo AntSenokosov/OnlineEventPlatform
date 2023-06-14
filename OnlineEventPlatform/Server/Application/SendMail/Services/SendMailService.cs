@@ -1,7 +1,7 @@
 ﻿using Application.SendMail.Services.Interfaces;
+using Domain.Identity.Entities;
 using Infrastructure.Configurations;
 using Infrastructure.Database;
-using Infrastructure.Exceptions;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.EntityFrameworkCore;
@@ -25,38 +25,35 @@ public class SendMailService : ISendMailService
     {
         try
         {
-            var onlineEvent = await _context.OnlineEvents
-                .FirstOrDefaultAsync(o => o.Id == eventId);
+            /*
+            var onlineEvent = await _context.OnlineEvents.FirstOrDefaultAsync(o => o.Id == eventId);
 
             if (onlineEvent == null)
             {
                 throw new ServiceException("Event not found");
             }
+            */
 
             var messageMail = new MimeMessage();
             messageMail.From.Add(new MailboxAddress(_mailSetting.DisplayName, _mailSetting.From));
-            messageMail.Sender = new MailboxAddress(_mailSetting.DisplayName, _mailSetting.From);
-
             messageMail.To.Add(MailboxAddress.Parse("anton.senokosov2001@gmail.com"));
-
-            var body = new BodyBuilder();
             messageMail.Subject = subject;
-            body.HtmlBody = GetTemplate(message);
-            messageMail.Body = body.ToMessageBody();
 
-            using var smtp = new SmtpClient();
-            if (_mailSetting.UseSSL)
-            {
-                await smtp.ConnectAsync(_mailSetting.Host, _mailSetting.Port, SecureSocketOptions.SslOnConnect);
-            }
-            else if (_mailSetting.UseStartTls)
-            {
-                await smtp.ConnectAsync(_mailSetting.Host, _mailSetting.Port, SecureSocketOptions.StartTls);
-            }
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Id == 11);
 
-            await smtp.AuthenticateAsync(_mailSetting.UserName, _mailSetting.Password);
-            await smtp.SendAsync(messageMail);
-            await smtp.DisconnectAsync(true);
+            var body = new TextPart("html")
+            {
+                Text = GetTemplate()
+            };
+
+            messageMail.Body = body;
+
+            using var client = new SmtpClient();
+            await client.ConnectAsync(_mailSetting.Host, _mailSetting.Port, SecureSocketOptions.StartTls);
+            await client.AuthenticateAsync(_mailSetting.UserName, _mailSetting.Password);
+            await client.SendAsync(messageMail);
+            await client.DisconnectAsync(true);
 
             return true;
         }
@@ -66,90 +63,128 @@ public class SendMailService : ISendMailService
         }
     }
 
-    private string GetTemplate(string message)
+    public async Task<bool> SendOneMail(int eventId, string email)
     {
-        var result = "<body style=\"background-color: #f4f4f4; margin: 0 !important; padding: 0 !important;\">" +
-    @"<div style=""display: none; font-size: 1px; color: #fefefe; line-height: 1px; font-family: 'Lato', Helvetica, Arial, sans-serif; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden;"">@Model?.Name We're thrilled to have you here! Get ready to dive into your new account. </div>" +
-    "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">" +
-        "<tr>" +
-            "<td bgcolor=\"#FFA73B\" align=\"center\">" +
-                "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"max-width: 600px;\">" +
-                    "<tr>" +
-                        "<td align=\"center\" valign=\"top\" style=\"padding: 40px 10px 40px 10px;\"></td>" +
-                    "</tr>" +
-                "</table>" +
-            "</td>" +
-        "</tr>" +
-        "<tr>" +
-            "<td bgcolor=\"#FFA73B\" align=\"center\" style=\"padding: 0px 10px 0px 10px;\">" +
-                "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"max-width: 600px;\">" +
-                    "<tr>" +
-                        "<td bgcolor=\"#ffffff\" align=\"center\" valign=\"top\" style=\"padding: 40px 20px 20px 20px; border-radius: 4px 4px 0px 0px; color: #111111; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 48px; font-weight: 400; letter-spacing: 4px; line-height: 48px;\">" +
-                            "<h1 style=\"font-size: 48px; font-weight: 400; margin: 2;\">Welcome @Model?.Name!</h1> <img src=\" https://img.icons8.com/clouds/100/000000/handshake.png\" width=\"125\" height=\"120\" style=\"display: block; border: 0px;\" />" +
-                        "</td>" +
-                    "</tr>" +
-                "</table>" +
-            "</td>" +
-        "</tr>" +
-        "<tr>" +
-            "<td bgcolor=\"#f4f4f4\" align=\"center\" style=\"padding: 0px 10px 0px 10px;\">" +
-                "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"max-width: 600px;\">" +
-                    "<tr>" +
-                       " <td bgcolor=\"#ffffff\" align=\"left\" style=\"padding: 20px 30px 40px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;\">" +
-                            "<p style=\"margin: 0;\">We're excited to have you get started at the MailKit Demo Platform. First, you need to confirm your account. Just press the button below.</p>" +
-                        "</td>" +
-                    "</tr>" +
-                    "<tr>" +
-                        "<td bgcolor=\"#ffffff\" align=\"left\">" +
-                            "<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">" +
-                                "<tr>" +
-                                   "<td bgcolor=\"#ffffff\" align=\"center\" style=\"padding: 20px 30px 60px 30px;\">" +
-                                        "<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\">" +
-                                            "<tr>" +
-                                                "<td align=\"center\" style=\"border-radius: 3px;\" bgcolor=\"#FFA73B\"><a href=\"#\" target=\"_blank\" style=\"font-size: 20px; font-family: Helvetica, Arial, sans-serif; color: #ffffff; text-decoration: none; color: #ffffff; text-decoration: none; padding: 15px 25px; border-radius: 2px; border: 1px solid #FFA73B; display: inline-block;\">Confirm Account</a></td>" +
-                                            "</tr>" +
-                                        "</table>" +
-                                    "</td>" +
-                                "</tr>" +
-                            "</table>" +
-                        "</td>" +
-                    "<tr>" +
-                        "<td bgcolor=\"#ffffff\" align=\"left\" style=\"padding: 0px 30px 0px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;\">" +
-                            "<p style=\"margin: 0;\">If that doesn't work, copy and paste the following link in your browser:</p>" +
-                        "</td>" +
-                    "<tr>" +
-                        "<td bgcolor=\"#ffffff\" align=\"left\" style=\"padding: 20px 30px 20px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;\">" +
-                            "<p style=\"margin: 0;\"><a href=\"#\" target=\"_blank\" style=\"color: #FFA73B;\">Some URL to activate the account</a></p>" +
-                        "</td>" +
-                    "</tr>" +
-                    "<tr>" +
-                        "<td bgcolor=\"#ffffff\" align=\"left\" style=\"padding: 0px 30px 20px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;\">" +
-                            "<p style=\"margin: 0;\">If you have any questions, just reply to this email—we're always happy to help out.</p>" +
-                        "</td>" +
-                    "</tr>" +
-                    "<tr>" +
-                        "<td bgcolor=\"#ffffff\" align=\"left\" style=\"padding: 0px 30px 40px 30px; border-radius: 0px 0px 4px 4px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;\">" +
-                            "<p style=\"margin: 0;\">Cheers,<br>BBB Team</p>" +
-                        "</td>" +
-                    "</tr>" +
-                "</table>" +
-            "</td>" +
-        "</tr>" +
-        "<tr>" +
-            "<td bgcolor=\"#f4f4f4\" align=\"center\" style=\"padding: 30px 10px 0px 10px;\">" +
-                "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"max-width: 600px;\">" +
-                    "<tr>" +
-                        "<td bgcolor=\"#FFECD1\" align=\"center\" style=\"padding: 30px 30px 30px 30px; border-radius: 4px 4px 4px 4px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;\">" +
-                            "<h2 style=\"font-size: 20px; font-weight: 400; color: #111111; margin: 0;\">Need more help?</h2>" +
-                            "<p style=\"margin: 0;\"><a href=\"#\" target=\"_blank\" style=\"color: #FFA73B;\">We&rsquo;re here to help you out</a></p>" +
-                        "</td>" +
-                    "</tr>" +
-                "</table>" +
-            "</td>" +
-        "</tr>" +
-    "</table>" +
-"</body>";
+        try
+        {
+            var messageMail = new MimeMessage();
+            messageMail.From.Add(new MailboxAddress(_mailSetting.DisplayName, _mailSetting.From));
+            messageMail.To.Add(MailboxAddress.Parse(email));
+            messageMail.Subject = "subject";
 
-        return result;
+            // var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == 11);
+            var body = new TextPart("html")
+            {
+                Text = GetTemplate()
+            };
+
+            messageMail.Body = body;
+
+            using var client = new SmtpClient();
+            await client.ConnectAsync(_mailSetting.Host, _mailSetting.Port, SecureSocketOptions.StartTls);
+            await client.AuthenticateAsync(_mailSetting.UserName, _mailSetting.Password);
+            await client.SendAsync(messageMail);
+            await client.DisconnectAsync(true);
+
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
+
+    public async Task<bool> SendInvitation(User user)
+    {
+        try
+        {
+            var messageMail = new MimeMessage();
+            messageMail.From.Add(new MailboxAddress(_mailSetting.DisplayName, _mailSetting.From));
+            messageMail.To.Add(MailboxAddress.Parse(user.Email));
+            messageMail.Subject = "Welcome to Our Platform";
+
+            var body = new TextPart("html")
+            {
+                Text = GetWelcomeTemplate(user)
+            };
+
+            messageMail.Body = body;
+
+            using var client = new SmtpClient();
+            await client.ConnectAsync(_mailSetting.Host, _mailSetting.Port, SecureSocketOptions.StartTls);
+            await client.AuthenticateAsync(_mailSetting.UserName, _mailSetting.Password);
+            await client.SendAsync(messageMail);
+            await client.DisconnectAsync(true);
+
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
+
+    public async Task<bool> SendRecoveryPassword(User user, string password)
+    {
+        try
+        {
+            var messageMail = new MimeMessage();
+            messageMail.From.Add(new MailboxAddress(_mailSetting.DisplayName, _mailSetting.From));
+            messageMail.To.Add(MailboxAddress.Parse(user.Email));
+            messageMail.Subject = "Відновлення паролю";
+
+            var body = new TextPart("html")
+            {
+                Text = TemplateRecoveryPassword(user, password)
+            };
+
+            messageMail.Body = body;
+
+            using var client = new SmtpClient();
+            await client.ConnectAsync(_mailSetting.Host, _mailSetting.Port, SecureSocketOptions.StartTls);
+            await client.AuthenticateAsync(_mailSetting.UserName, _mailSetting.Password);
+            await client.SendAsync(messageMail);
+            await client.DisconnectAsync(true);
+
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
+
+    private string TemplateRecoveryPassword(User user, string password)
+    {
+        var template = _context.MailTemplates.FirstOrDefault(t => t.Id == 5)!.Html;
+
+        // var template = File.ReadAllText("../../../Infrastructure/Files/HtmlTemplate/WelcomeTemplate.html");
+        template = template!.Replace("{UserName}", $"{user.FirstName} {user.LastName}");
+        template = template.Replace("{Password}", password);
+
+        return template;
+    }
+
+    private string GetWelcomeTemplate(User user)
+    {
+        var template = _context.MailTemplates.FirstOrDefault(t => t.DefaultTemplate == true)!.Html;
+        var welcomeTemplate = _context.MailTemplates.FirstOrDefault(t => t.WelcomeTemplate == true);
+
+        // var template = File.ReadAllText("../../../Infrastructure/Files/HtmlTemplate/WelcomeTemplate.html");
+        var activationLink = "localhost:4200";
+
+        template = template!.Replace("{Html}", $"{welcomeTemplate!.Html}")
+            .Replace("{Css}", $"{welcomeTemplate.Css}")
+            .Replace("{UserName}", $"{user.FirstName} {user.LastName}")
+            .Replace("{ActivationLink}", activationLink);
+
+        return template;
+    }
+
+    private string GetTemplate()
+    {
+        var template = _context.MailTemplates.FirstOrDefault(t => t.Id == 1)!.Html;
+
+        return template!;
     }
 }

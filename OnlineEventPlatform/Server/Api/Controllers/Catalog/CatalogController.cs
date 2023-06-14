@@ -24,4 +24,18 @@ public class CatalogController : Controller
 
         return Ok(response);
     }
+
+    [HttpGet("{id}")]
+    [ProducesResponseType(typeof(ItemResponse<OnlineEventDto>), (int)HttpStatusCode.OK)]
+    public async Task<IActionResult> GetItem([FromRoute] int id)
+    {
+        var item = await _catalogService.GetItem(id);
+
+        var response = new ItemResponse<EventItem>()
+        {
+            Item = item
+        };
+
+        return Ok(response);
+    }
 }

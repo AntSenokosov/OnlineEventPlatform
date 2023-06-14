@@ -1,0 +1,35 @@
+.settings-page{
+  display: flex;
+}
+.setting-header{
+  margin: 24px 0 8px 363px;
+  font-weight: 700;
+  padding-bottom: 16px;
+}
+.setting-wrapper{
+  margin-left: 375px;
+  padding:0 16px 0 0;
+  width: 276px;
+  border-right: 0.8px solid #80808038;
+}
+.auth-wrapper{
+  width:270px;
+  padding: 0 0 0 16px;
+}
+
+.confirm-error{
+  height: 1rem;
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+}
+manual-setup-key{
+  border: 1px solid darkgrey;
+  border-radius: 0.25rem;
+  padding: 0.5rem;
+}
+
+
+.kendo-datepick {
+  height: 45px;
+}

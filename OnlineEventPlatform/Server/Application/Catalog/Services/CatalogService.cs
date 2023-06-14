@@ -30,11 +30,17 @@ public class CatalogService : BaseDataService<OnlineEventContext>, ICatalogServi
                 Id = e.Id,
                 Name = e.Name,
                 Description = e.Description,
-                DateAndTime = e.DateAndTime,
+                Date = e.Date,
+                Time = e.Time,
                 AboutEvent = e.AboutEvent
             });
 
             return itemsDto;
         });
+    }
+
+    public async Task<EventItem> GetItem(int id)
+    {
+        return await ExecuteSafeAsync(async () => await _catalogRepository.GetItem(id));
     }
 }

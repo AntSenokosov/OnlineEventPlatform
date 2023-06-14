@@ -1,7 +1,9 @@
 ﻿using Application.Identity.Repositories.Interfaces;
 using Application.Identity.Services.Interfaces;
 using AutoMapper;
+using Google.Authenticator;
 using Infrastructure.Database;
+using Infrastructure.Exceptions;
 using Infrastructure.Services;
 using Infrastructure.Services.Interfaces;
 using Microsoft.Extensions.Logging;
@@ -24,45 +26,88 @@ public class UserProfileService : BaseDataService<OnlineEventContext>, IUserProf
         _mapper = mapper;
     }
 
-    public async Task<UserProfileDto?> GetUserProfileAsync()
+    public async Task<UserResponseDto> GetCurrentUserAsync()
+    {
+        return await ExecuteSafeAsync(async () => await _profileRepository.GetCurrentUserAsync());
+    }
+
+    public async Task<int?> UpdateUserAsync(string email, string firstName, string lastName, string? googleAuthCode)
     {
         return await ExecuteSafeAsync(async () =>
         {
-            var user = await _profileRepository.GetUserProfileAsync();
+            var user = await _profileRepository.UpdateUserAsync(email, firstName, lastName, googleAuthCode);
 
             if (user == null)
             {
-                return null;
+                throw new ServiceException("User not found");
             }
 
-            var userDto = new UserProfileDto()
+            return _mapper.Map<int>(user);
+        });
+    }
+
+    public async Task<bool?> DeleteUser()
+    {
+        return await ExecuteSafeAsync(async () =>
+        {
+            var user = await _profileRepository.DeleteUser();
+
+            if (user == null)
             {
-                Id = user.Id,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Email = user.Email,
-                Phone = user.Phone
-            };
+                throw new ServiceException("User not found");
+            }
 
-            return userDto;
+            return _mapper.Map<bool>(user);
         });
     }
 
-    public async Task<int?> CreateUserProfileAsync(string firstName, string lastName, string phone)
+    public async Task<int> ChangePassword(string password)
+    {
+        return await ExecuteSafeAsync(async () => await _profileRepository.ChangePassword(password));
+    }
+
+    public async Task<SetupCode?> GenerateTwoFactorAuth(bool retry, string password)
     {
         return await ExecuteSafeAsync(async () =>
         {
-            var user = await _profileRepository.CreateUserProfileAsync(firstName, lastName, phone);
-            return _mapper.Map<int?>(user);
+            var user = await _profileRepository.GenerateTwoFactorAuth(retry, password);
+
+            if (user == null)
+            {
+                throw new ServiceException("User not found");
+            }
+
+            return _mapper.Map<SetupCode>(user);
         });
     }
 
-    public async Task<int?> UpdateUserProfileAsync(string firstName, string lastName, string phone)
+    public async Task<int?> VerifyTwoFactorAuth(string googleAuthCode)
     {
         return await ExecuteSafeAsync(async () =>
         {
-            var user = await _profileRepository.UpdateUserProfileAsync(firstName, lastName, phone);
-            return _mapper.Map<int?>(user);
+            var user = await _profileRepository.VerifyTwoFactorAuth(googleAuthCode);
+
+            if (user == null)
+            {
+                throw new ServiceException("User not found");
+            }
+
+            return _mapper.Map<int>(user);
+        });
+    }
+
+    public async Task<int?> DisableTwoFactorAuth(string password, string googleAuthCode)
+    {
+        return await ExecuteSafeAsync(async () =>
+        {
+            var user = await _profileRepository.DisableTwoFactorAuth(password, googleAuthCode);
+
+            if (user == null)
+            {
+                throw new ServiceException("User not found");
+            }
+
+            return _mapper.Map<int>(user);
         });
     }
 }

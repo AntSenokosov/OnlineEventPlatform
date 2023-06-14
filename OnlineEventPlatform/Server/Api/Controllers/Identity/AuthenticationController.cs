@@ -1,128 +1,50 @@
 ﻿using System.Net;
 using Api.Requests.Identity;
 using Api.Responses;
-using Application.Identity;
 using Application.Identity.Services.Interfaces;
-using Infrastructure.Security;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers.Identity;
 
-[Route("user")]
-public class UserController : Controller
+[Route("auth")]
+public class AuthenticationController : Controller
 {
-    private readonly IUserService _userService;
+    private readonly IAuthenticationService _authenticationService;
 
-    public UserController(IUserService userService)
+    public AuthenticationController(IAuthenticationService authenticationService)
     {
-        _userService = userService;
+        _authenticationService = authenticationService;
     }
 
     [HttpPost("login")]
-    [ProducesResponseType(typeof(LoginResponse), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(UserResponse), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
     {
-        var token = await _userService.Login(loginRequest.Email, loginRequest.Password, loginRequest.GoogleAuthCode);
+        var result = await _authenticationService.Login(loginRequest.Email, loginRequest.Password, loginRequest.GoogleAuthCode);
 
-        var response = new LoginResponse()
+        var response = new UserResponse.UserContainer()
         {
-            Token = token
+            Id = result.Id,
+            Email = result.Email,
+            Token = result.Token,
+            TokenValidTo = result.TokenValidTo,
+            FirstName = result.FirstName,
+            LastName = result.LastName,
+            IsAdmin = result.IsAdmin,
+            IsSuperAdmin = result.IsSuperAdmin,
+            HasTwoFactoryAuthEnable = result.HasTwoFactoryAuthEnable
         };
 
         return Ok(response);
     }
 
-    [HttpGet]
-    [ProducesResponseType(typeof(ItemResponse<UserDto>), (int)HttpStatusCode.OK)]
-    [Authorize(AuthenticationSchemes = JwtIssuerOptions.Schemes)]
-    public async Task<IActionResult> GetUser()
-    {
-        var response = new ItemResponse<UserDto>()
-        {
-            Item = await _userService.GetUserAsync()
-        };
-
-        return Ok(response);
-    }
-
-    [HttpPost("create")]
+    [HttpPost("register")]
     [ProducesResponseType(typeof(AddResponse), (int)HttpStatusCode.OK)]
-    public async Task<IActionResult> CreateUser([FromBody] CreateUserRequest request)
+    public async Task<IActionResult> Register([FromBody] CreateUserRequest request)
     {
         var response = new AddResponse()
         {
-            Id = await _userService.CreateUser(request.Email, request.Password)
-        };
-
-        return Ok(response);
-    }
-
-    [HttpPut("update")]
-    [ProducesResponseType(typeof(UpdateResponse), (int)HttpStatusCode.OK)]
-    [Authorize(AuthenticationSchemes = JwtIssuerOptions.Schemes)]
-    public async Task<IActionResult> UpdateUser([FromBody] UpdateUserRequest request)
-    {
-        var response = new UpdateResponse()
-        {
-            Id = await _userService.UpdateUser(request.Email, request.Password, request.GoogleAuthCode)
-        };
-
-        return Ok(response);
-    }
-
-    [HttpDelete("delete")]
-    [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
-    [Authorize(AuthenticationSchemes = JwtIssuerOptions.Schemes)]
-    public async Task<IActionResult> DeleteUser()
-    {
-        var response = await _userService.DeleteUser();
-
-        return Ok(response);
-    }
-
-    [HttpPost("generateTwoFactory")]
-    [ProducesResponseType(typeof(GenerateTwoFactoryResponse), (int)HttpStatusCode.OK)]
-    [Authorize(AuthenticationSchemes = JwtIssuerOptions.Schemes)]
-    public async Task<IActionResult> GenerateTwoFactory([FromBody] GenerateTwoFactoryRequest request)
-    {
-        var response = await _userService.GenerateTwoFactorAuth(request.Retry, request.Password);
-
-        if (response == null)
-        {
-            return Ok();
-        }
-
-        var result = new GenerateTwoFactoryResponse()
-        {
-            QrCodeImageUrl = response.QrCodeSetupImageUrl,
-            ManualEntrySetupCode = response.ManualEntryKey
-        };
-
-        return Ok(result);
-    }
-
-    [HttpPost("verify")]
-    [ProducesResponseType(typeof(UpdateResponse), (int)HttpStatusCode.OK)]
-    [Authorize(AuthenticationSchemes = JwtIssuerOptions.Schemes)]
-    public async Task<IActionResult> VerifyTwoFactory([FromBody] VerifyTwoFactoryRequest request)
-    {
-        var response = new UpdateResponse()
-        {
-            Id = await _userService.VerifyTwoFactorAuth(request.GoogleAuthCode)
-        };
-
-        return Ok(response);
-    }
-
-    [HttpPut("disable")]
-    [ProducesResponseType(typeof(UpdateResponse), (int)HttpStatusCode.OK)]
-    [Authorize(AuthenticationSchemes = JwtIssuerOptions.Schemes)]
-    public async Task<IActionResult> DisableTwoFactory([FromBody] DisableTwoFactoryRequest request)
-    {
-        var response = new UpdateResponse()
-        {
-            Id = await _userService.DisableTwoFactorAuth(request.Password, request.GoogleAuthCode)
+            Id = await _authenticationService.RegisterAsync(request.FirstName, request.LastName, request.Email, request.Password)
         };
 
         return Ok(response);
@@ -130,13 +52,21 @@ public class UserController : Controller
 
     [HttpGet("check")]
     [ProducesResponseType(typeof(CheckTwoFactoryResponse), (int)HttpStatusCode.OK)]
-    [Authorize(AuthenticationSchemes = JwtIssuerOptions.Schemes)]
-    public async Task<IActionResult> CheckTwoFactory()
+    public async Task<IActionResult> CheckTwoFactory([FromRoute] string email)
     {
         var response = new CheckTwoFactoryResponse()
         {
-            Enable = await _userService.CheckTwoFactorAuth()
+            Enable = await _authenticationService.CheckTwoFactory(email)
         };
+
+        return Ok(response);
+    }
+
+    [HttpPost("recovery")]
+    [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
+    public async Task<IActionResult> PasswordRecovery([FromBody] PasswordRecoveryRequest request)
+    {
+        var response = await _authenticationService.PasswordRecovery(request.Email);
 
         return Ok(response);
     }

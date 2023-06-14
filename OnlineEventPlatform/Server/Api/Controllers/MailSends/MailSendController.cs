@@ -31,4 +31,18 @@ public class MailSendController : Controller
 
         return BadRequest(statusEmail);
     }
+
+    [Route("sendOne")]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
+    public async Task<IActionResult> SendOneMail([FromBody] MailOneRequest request)
+    {
+        var statusEmail = await _sendMail.SendOneMail(request.EventId, request.Email);
+
+        if (statusEmail)
+        {
+            return Ok(statusEmail);
+        }
+
+        return BadRequest(statusEmail);
+    }
 }

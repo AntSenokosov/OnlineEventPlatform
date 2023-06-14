@@ -35,9 +35,9 @@ public class SpeakerService : BaseDataService<OnlineEventContext>, ISpeakerServi
                 Id = s.Id,
                 FirstName = s.FirstName,
                 LastName = s.LastName,
-                Description = s.Description,
-                DepartmentId = s.DepartmentId,
-                PositionId = s.PositionId
+                Position = s.Position,
+                ShortDescription = s.ShortDescription,
+                LongDescription = s.LongDescription
             });
 
             return speakersDto;
@@ -60,9 +60,9 @@ public class SpeakerService : BaseDataService<OnlineEventContext>, ISpeakerServi
                 Id = speaker.Id,
                 FirstName = speaker.FirstName,
                 LastName = speaker.LastName,
-                PositionId = speaker.PositionId,
-                DepartmentId = speaker.DepartmentId,
-                Description = speaker.Description
+                Position = speaker.Position,
+                ShortDescription = speaker.ShortDescription,
+                LongDescription = speaker.LongDescription
             };
 
             return speakerDto;
@@ -72,14 +72,14 @@ public class SpeakerService : BaseDataService<OnlineEventContext>, ISpeakerServi
     public async Task<int> AddSpeakerAsync(
         string firstName,
         string lastName,
-        int departmentId,
-        int positionId,
-        string description)
+        string? position,
+        string? shortDescription,
+        string? longDescription)
     {
         return await ExecuteSafeAsync(async () =>
         {
             var speaker = await _speakerRepository
-                .AddSpeakerAsync(firstName, lastName, departmentId, positionId, description);
+                .AddSpeakerAsync(firstName, lastName, position, shortDescription, longDescription);
             return _mapper.Map<int>(speaker);
         });
     }
@@ -88,14 +88,14 @@ public class SpeakerService : BaseDataService<OnlineEventContext>, ISpeakerServi
         int id,
         string firstName,
         string lastName,
-        int departmentId,
-        int positionId,
-        string description)
+        string? position,
+        string? shortDescription,
+        string? longDescription)
     {
         return await ExecuteSafeAsync(async () =>
         {
             var speaker = await _speakerRepository
-                .UpdateSpeakerAsync(id, firstName, lastName, departmentId, positionId, description);
+                .UpdateSpeakerAsync(id, firstName, lastName, position, shortDescription, longDescription);
             return _mapper.Map<int?>(speaker);
         });
     }

@@ -74,23 +74,28 @@ public static class ServicesExtensions
 
     public static void AddServices(this IServiceCollection services)
     {
-        services.AddTransient<IDepartmentRepository, DepartmentRepository>();
-        services.AddTransient<IPositionRepository, PositionRepository>();
         services.AddTransient<ISpeakerRepository, SpeakerRepository>();
         services.AddTransient<IOnlineEventRepository, OnlineEventRepository>();
-        services.AddTransient<IDepartmentService, DepartmentService>();
-        services.AddTransient<IPositionService, PositionService>();
         services.AddTransient<ISpeakerService, SpeakerService>();
         services.AddTransient<IOnlineEventService, OnlineEventService>();
+        services.AddTransient<ICatalogRepository, CatalogRepository>();
+        services.AddTransient<ICatalogService, CatalogService>();
+        services.AddTransient<IMeetingPlatformRepository, MeetingPlatformRepository>();
+        services.AddTransient<IMeetingPlatformService, MeetingPlatformService>();
+        services.AddTransient<IEventTypeRepository, EventTypeRepository>();
+        services.AddTransient<IEventTypeService, EventTypeService>();
 
         services.AddScoped<IPasswordHasher, PasswordHasher>();
         services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
         services.TryAddScoped<ICurrentUserAccessor, CurrentUserAccessor>();
+        services.AddScoped<IGeneratePassword, GeneratePassword>();
 
-        services.AddTransient<IUserRepository, UserRepository>();
+        services.AddTransient<IAuthenticationRepository, AuthenticationRepository>();
+        services.AddTransient<IAuthenticationService, AuthenticationService>();
         services.AddTransient<IUserProfileRepository, UserProfileRepository>();
-        services.AddTransient<IUserService, UserService>();
         services.AddTransient<IUserProfileService, UserProfileService>();
+        services.AddTransient<IUserRepository, UserRepository>();
+        services.AddTransient<IUserService, UserService>();
 
         services.AddTransient<IUserEventRepository, UserEventRepository>();
         services.AddTransient<IUserEventService, UserEventService>();

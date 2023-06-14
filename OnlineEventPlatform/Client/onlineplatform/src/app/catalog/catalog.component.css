@@ -1,0 +1,55 @@
+.container {
+  padding: 0 20px; /* Рівні відступи з обох сторін */
+  box-sizing: border-box; /* Враховуємо відступи в розмірах контейнера */
+}
+
+.catalog {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin: 0 -10px;
+}
+
+.event-card {
+  width: calc(33.33% - 20px);
+  margin-bottom: 20px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+  box-sizing: border-box;
+}
+
+.event-image {
+  width: 200px;
+  height: 200px;
+}
+
+.event-content {
+  margin-top: 10px;
+}
+
+.event-card h3 {
+  font-size: 18px;
+  margin-bottom: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.event-card p {
+  font-size: 14px;
+  margin-bottom: 10px;
+  white-space: normal;
+  word-wrap: break-word;
+}
+
+.event-card p:last-child {
+  margin-bottom: 0;
+}
+
+.long-text {
+  max-height: 72px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

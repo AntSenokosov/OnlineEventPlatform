@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers.Identity;
 
-[Route("userprofile")]
+[Route("profile")]
 [Authorize(AuthenticationSchemes = JwtIssuerOptions.Schemes)]
 public class UserProfileController : Controller
 {
@@ -21,26 +21,22 @@ public class UserProfileController : Controller
     }
 
     [HttpGet]
-    [ProducesResponseType(typeof(ItemResponse<UserProfileDto>), (int)HttpStatusCode.OK)]
-    [Authorize(AuthenticationSchemes = JwtIssuerOptions.Schemes)]
+    [ProducesResponseType(typeof(UserResponse), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetUserProfile()
     {
-        var response = new ItemResponse<UserProfileDto>()
-        {
-            Item = await _profileService.GetUserProfileAsync()
-        };
+        var result = await _profileService.GetCurrentUserAsync();
 
-        return Ok(response);
-    }
-
-    [HttpPost("create")]
-    [ProducesResponseType(typeof(UpdateResponse), (int)HttpStatusCode.OK)]
-    [Authorize(AuthenticationSchemes = JwtIssuerOptions.Schemes)]
-    public async Task<IActionResult> CreateUserProfile([FromBody] CreateUpdateUserProfileRequest request)
-    {
-        var response = new UpdateResponse()
+        var response = new UserResponse.UserContainer()
         {
-            Id = await _profileService.CreateUserProfileAsync(request.FirstName, request.LastName, request.Phone!),
+            Id = result.Id,
+            Email = result.Email,
+            Token = result.Token,
+            TokenValidTo = result.TokenValidTo,
+            FirstName = result.FirstName,
+            LastName = result.LastName,
+            IsAdmin = result.IsAdmin,
+            IsSuperAdmin = result.IsSuperAdmin,
+            HasTwoFactoryAuthEnable = result.HasTwoFactoryAuthEnable
         };
 
         return Ok(response);
@@ -48,12 +44,76 @@ public class UserProfileController : Controller
 
     [HttpPut("update")]
     [ProducesResponseType(typeof(UpdateResponse), (int)HttpStatusCode.OK)]
-    [Authorize(AuthenticationSchemes = JwtIssuerOptions.Schemes)]
-    public async Task<IActionResult> UpdateUserProfile([FromBody] CreateUpdateUserProfileRequest request)
+    public async Task<IActionResult> UpdateUserProfile([FromBody] UpdateUserProfileRequest request)
     {
         var response = new UpdateResponse()
         {
-            Id = await _profileService.UpdateUserProfileAsync(request.FirstName, request.LastName, request.Phone!)
+            Id = await _profileService.UpdateUserAsync(request.Email, request.FirstName, request.LastName, request.GoogleAuthCode)
+        };
+
+        return Ok(response);
+    }
+
+    [HttpPut("changePassword")]
+    [ProducesResponseType(typeof(UpdateResponse), (int)HttpStatusCode.OK)]
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePassword request)
+    {
+        var response = new UpdateResponse()
+        {
+            Id = await _profileService.ChangePassword(request.Password)
+        };
+
+        return Ok(response);
+    }
+
+    [HttpDelete("delete")]
+    [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
+    public async Task<IActionResult> DeleteUser()
+    {
+        var response = await _profileService.DeleteUser();
+
+        return Ok(response);
+    }
+
+    [HttpPost("generateTwoFactory")]
+    [ProducesResponseType(typeof(GenerateTwoFactoryResponse), (int)HttpStatusCode.OK)]
+    public async Task<IActionResult> GenerateTwoFactory([FromBody] GenerateTwoFactoryRequest request)
+    {
+        var response = await _profileService.GenerateTwoFactorAuth(request.Retry, request.Password);
+
+        if (response == null)
+        {
+            return Ok();
+        }
+
+        var result = new GenerateTwoFactoryResponse()
+        {
+            QrCodeImageUrl = response.QrCodeSetupImageUrl,
+            ManualEntrySetupCode = response.ManualEntryKey
+        };
+
+        return Ok(result);
+    }
+
+    [HttpPost("verify")]
+    [ProducesResponseType(typeof(UpdateResponse), (int)HttpStatusCode.OK)]
+    public async Task<IActionResult> VerifyTwoFactory([FromBody] VerifyTwoFactoryRequest request)
+    {
+        var response = new UpdateResponse()
+        {
+            Id = await _profileService.VerifyTwoFactorAuth(request.GoogleAuthCode)
+        };
+
+        return Ok(response);
+    }
+
+    [HttpPut("disable")]
+    [ProducesResponseType(typeof(UpdateResponse), (int)HttpStatusCode.OK)]
+    public async Task<IActionResult> DisableTwoFactory([FromBody] DisableTwoFactoryRequest request)
+    {
+        var response = new UpdateResponse()
+        {
+            Id = await _profileService.DisableTwoFactorAuth(request.Password, request.GoogleAuthCode)
         };
 
         return Ok(response);

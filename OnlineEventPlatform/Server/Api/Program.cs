@@ -46,26 +46,17 @@ builder.Services.AddScoped<IDbContextWrapper<OnlineEventContext>, DbContextWrapp
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(
-        "CorsPolicy",
-        builder => builder
-            .SetIsOriginAllowed((host) => true)
-            .AllowAnyMethod()
-            .AllowAnyHeader()
-            .AllowCredentials());
+    options.AddDefaultPolicy(builder => builder
+        .WithOrigins("http://localhost:4200")
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowCredentials()
+        .SetIsOriginAllowed((host) => true));
 });
 
 var app = builder.Build();
 
 MigrateDatabase(app);
-
-// Configure the HTTP request pipeline.
-app.UseCors(builder =>
-    builder
-        .WithOrigins()
-        .AllowCredentials()
-        .AllowAnyHeader()
-        .AllowAnyMethod());
 
 // Configure the HTTP request pipeline.
 app.UseStatusCodePages();
@@ -87,6 +78,8 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 
+app.UseCors();
+
 app.MapControllers();
 
 app.Run();
@@ -103,47 +96,22 @@ IConfiguration GetConfiguration()
 
 void MigrateDatabase(IHost host)
 {
-    using (var serviceScope = host.Services.CreateScope())
+    using var serviceScope = host.Services.CreateScope();
+    var services = serviceScope.ServiceProvider;
+
+    try
     {
-        var services = serviceScope.ServiceProvider;
+        var context = services.GetRequiredService<OnlineEventContext>();
+        var passwordHasher = services.GetService<IPasswordHasher>();
 
-        try
-        {
-            var context = services.GetService<OnlineEventContext>();
-            var passwordHasher = services.GetService<IPasswordHasher>();
+        context.Database.Migrate();
+        var password = config.GetValue<string>("Password");
 
-            if (context != null)
-            {
-                context.Database.Migrate();
-
-                var email = "a.y.senokosov@student.khai.edu";
-
-                var password = config.GetValue<string>("Password");
-
-                var user = context.Users
-                    .SingleOrDefault(u => u.Email == email && !u.IsDeleted);
-
-                if (user == null && passwordHasher != null && password != null)
-                {
-                    var salt = Guid.NewGuid().ToByteArray();
-                    {
-                        var person = new User()
-                        {
-                            Email = email,
-                            Hash = passwordHasher.Hash(password, salt),
-                            Salt = salt
-                        };
-
-                        context.Users.Add(person);
-                        context.SaveChanges();
-                    }
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            var logger = services.GetRequiredService<ILogger<Program>>();
-            logger.LogError(ex, "An error occurred creating the DB.");
-        }
+        DatabaseInitialization.InitData(context, passwordHasher, password).Wait();
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred creating the DB.");
     }
 }

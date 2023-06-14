@@ -30,4 +30,11 @@
       <ProjectReference Include="..\Domain\Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Remove="Files\HtmlTemplate\WelcomeTemplate.html" />
+      <Resource Include="Files\HtmlTemplate\WelcomeTemplate.html">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Resource>
+    </ItemGroup>
+
 </Project>

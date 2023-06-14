@@ -1,7 +1,9 @@
-﻿using Application.UserEvents.Repositories.Interfaces;
+﻿using System.Net;
+using Application.UserEvents.Repositories.Interfaces;
 using Domain.Catalog.Entities;
 using Domain.UserEvents.Entities;
 using Infrastructure.Database;
+using Infrastructure.Helpers;
 using Infrastructure.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -108,5 +110,26 @@ public class UserEventRepository : IUserEventRepository
         await _onlineEventContext.SaveChangesAsync();
 
         return removeEntity.Entity.Id;
+    }
+
+    public async Task<bool> Check(int eventId)
+    {
+        var user = await _onlineEventContext.Users
+            .FirstOrDefaultAsync(u => u.Email == _userAccessor.GetCurrentEmail());
+
+        if (user == null)
+        {
+            throw new RestException(
+                HttpStatusCode.NotFound,
+                new
+                {
+                    Message = "User not found"
+                });
+        }
+
+        var userEvent = await _onlineEventContext.UserEvents
+            .FirstOrDefaultAsync(ue => ue.UserId == user.Id && ue.OnlineEventId == eventId);
+
+        return userEvent != null;
     }
 }

@@ -36,6 +36,15 @@ public class UserEventController : Controller
         return Ok(response);
     }
 
+    [HttpPost("check")]
+    [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
+    public async Task<IActionResult> CheckEvent([FromBody] AddDeleteRequest request)
+    {
+        var response = await _eventService.Check(request.EventId);
+
+        return Ok(response);
+    }
+
     [HttpPost("add")]
     [ProducesResponseType(typeof(UpdateResponse), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> AddEvent([FromBody] AddDeleteRequest request)

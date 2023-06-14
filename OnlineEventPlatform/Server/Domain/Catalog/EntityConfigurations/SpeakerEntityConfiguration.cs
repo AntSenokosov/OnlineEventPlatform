@@ -19,15 +19,10 @@ public class SpeakerEntityConfiguration : IEntityTypeConfiguration<Speaker>
         builder.Property(s => s.LastName)
             .IsRequired();
 
-        builder.Property(s => s.Description)
+        builder.Property(s => s.ShortDescription)
             .IsRequired(false);
 
-        builder.HasOne(s => s.Department)
-            .WithMany()
-            .HasForeignKey(s => s.DepartmentId);
-
-        builder.HasOne(s => s.Position)
-            .WithMany()
-            .HasForeignKey(s => s.PositionId);
+        builder.Property(s => s.LongDescription)
+            .IsRequired(false);
     }
 }

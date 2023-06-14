@@ -18,11 +18,13 @@ public class UserEntityConfiguration : IEntityTypeConfiguration<User>
         builder.Property(u => u.Email)
             .IsRequired();
 
+        builder.Property(u => u.FirstName)
+            .IsRequired();
+
+        builder.Property(u => u.LastName)
+            .IsRequired();
+
         builder.Property(u => u.GoogleAuthKey)
             .IsRequired(false);
-
-        builder.HasOne(u => u.UserProfile)
-            .WithOne(p => p.User)
-            .HasForeignKey<UserProfile>(u => u.UserId);
     }
 }
